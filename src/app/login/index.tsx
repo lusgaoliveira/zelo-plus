@@ -4,6 +4,7 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Formik } from 'formik';
@@ -11,15 +12,35 @@ import LoginSchema from '../../utils/validadores/login';
 import styles from './styles';
 import Logo from "../../components/logo"
 import { Link, router } from 'expo-router';
+import { Chamadas } from '../../servicos/chamadasApi';
+import { Login } from '../../modelos/Login';
 export default function LoginScreen() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
-  const handleLogin = (value: {nomeUsuario : string, senha: string} ) => {
-    console.log('Usuário:', value.nomeUsuario, 'Senha:', value.senha);
-  };
+  const handleLogin = async (values: {nomeUsuario : string, senha: string}) => {
+    try {
 
-  const cadastrar = () => {
-    console.log("Aqui")
+      const loginPayload: Login = {
+        nomeUsuario: values.nomeUsuario,
+        senha: values.senha,
+      };
+      
+      const dadosUsuario = await Chamadas.login(loginPayload);
+
+      if (dadosUsuario) {
+        console.log(dadosUsuario)
+        router.push({
+          pathname: '/home',
+          params: {
+            dados: JSON.stringify(dadosUsuario),
+          },
+        });
+      } else {
+        Alert.alert('Erro', 'Usuário ou senha inválidos');
+      }
+    } catch (error: any) {
+      Alert.alert('Erro', error.response?.data?.mensagem || 'Erro ao tentar fazer login');
+    }
   };
 
   return (
@@ -80,7 +101,7 @@ export default function LoginScreen() {
                 <Text style={styles.erro}>{errors.senha}</Text>
               )}
 
-              <TouchableOpacity style={styles.botao} onPress={() =>handleSubmit}>
+              <TouchableOpacity style={styles.botao} onPress={() => handleSubmit()}>
                 <Text style={styles.botaoTexto}>Entrar</Text>
               </TouchableOpacity>
             </>
