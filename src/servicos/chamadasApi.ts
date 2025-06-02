@@ -1,6 +1,7 @@
 import instance from "../infra/axiosConfig";
 import { CriarUsuario } from "../modelos/CriarUsuario";
 import { Login } from "../modelos/Login";
+import { TipoTarefa } from "../modelos/Tarefa";
 
 const pegarErros = (error: any): never => {
   if (error.response) {
@@ -67,4 +68,15 @@ export class Chamadas {
       pegarErros(error)
     }
   }
+
+  static async listarTiposTarefa(): Promise<TipoTarefa[]> {
+    try {
+      const resposta = await instance.get("/tipos-tarefa");
+      return resposta.data;
+    } catch (error) {
+      pegarErros(error);
+      throw error; 
+    }
+  } 
+  
 }
