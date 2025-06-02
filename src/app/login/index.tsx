@@ -11,7 +11,7 @@ import { Formik } from 'formik';
 import LoginSchema from '../../utils/validadores/login';
 import styles from './styles';
 import Logo from "../../components/logo"
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { Chamadas } from '../../servicos/chamadasApi';
 import { Login } from '../../modelos/Login';
 export default function LoginScreen() {
