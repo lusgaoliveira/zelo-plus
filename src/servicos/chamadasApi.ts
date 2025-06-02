@@ -28,8 +28,8 @@ export class Chamadas {
             ...dados
         }
         console.log(payload)
-        const response = await instance.post("/login", payload);
-        return response.data;
+        const resposta = await instance.post("/login", payload);
+        return resposta.data;
     } catch (error) {
       pegarErros(error);
     }
@@ -41,21 +41,30 @@ export class Chamadas {
         ...dados,
         dataNascimento: converterDataBrasileiraParaISO(dados.dataNascimento),
       };
-      const response = await instance.post("/usuarios/criar", payload);
-      return response.data;
+      const resposta = await instance.post("/usuarios/criar", payload);
+      return resposta.data;
     } catch (error) {
-        pegarErros(error);
+      pegarErros(error);
     }
   }
 
   static async buscarTarefas(id: number, pagina = 0) {
     try {
-    const response = await instance.get(`/tarefas/buscartarefas/${id}`, {
-      params: { page: pagina }
-    });
-    return response.data; 
-  } catch (error) {
-    pegarErros(error);
+      const resposta = await instance.get(`/tarefas/buscartarefas/${id}`, {
+        params: { page: pagina }
+      });
+      return resposta.data; 
+    } catch (error) {
+      pegarErros(error);
+    }
   }
+
+  static async buscarTarefa(id: number) {
+    try {
+      const resposta = await instance.get(`/tarefas/buscar/${id}`);
+      return resposta.data
+    } catch (error) {
+      pegarErros(error)
+    }
   }
 }
