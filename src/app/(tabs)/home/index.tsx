@@ -6,8 +6,8 @@ import {
   ActivityIndicator,
   Alert,
   TouchableOpacity,
+  StyleSheet
 } from "react-native";
-import styles from "./styles";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Tarefas } from "../../../modelos/Tarefas";
 import { Chamadas } from "../../../servicos/chamadasApi";
@@ -54,8 +54,8 @@ export default function HomeScreen() {
       style={styles.item}
       onPress={() =>
         router.push({
-          pathname: "/detalhes",
-          params: { tarefa: JSON.stringify(item) },
+          pathname: "/detalhes/[id]",
+          params: { id: item.id.toString() },
         })
       }
     >
@@ -98,3 +98,36 @@ export default function HomeScreen() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 20,
+  },
+  topo: {
+    flex: 0.5,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  titulo: {
+    fontSize: 32,
+    fontWeight: "bold",
+    marginBottom: 10,
+    textAlign: "center",
+  },
+  listaContainer: {
+    flex: 0.5,
+  },
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+  },
+  itemTitulo: {
+    fontWeight: "bold",
+  },
+  itemStatus: {
+    marginTop: 4,
+  },
+});
