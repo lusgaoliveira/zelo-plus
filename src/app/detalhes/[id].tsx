@@ -15,10 +15,13 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, useLocalSearchParams } from "expo-router";
 import { Chamadas } from "../../servicos/chamadasApi";
 import { Tarefa } from "../../modelos/Tarefa";
+import { TipoTarefa } from "../../modelos/Tarefa";
+import { Picker } from "@react-native-picker/picker";
 
 export default function DetalhesScreen() {
   const { id } = useLocalSearchParams();
   const [tarefa, setTarefa] = useState<Tarefa | null>(null);
+  const [tiposTarefa, setTiposTarefa] = useState<TipoTarefa[]>([]);
   const [carregando, setCarregando] = useState(true);
   const [editavel, setEditavel] = useState(false);
   const [mostrarDataPicker, setMostrarDataPicker] = useState(false);
@@ -28,10 +31,11 @@ export default function DetalhesScreen() {
     const buscarTarefa = async () => {
       try {
         const resposta = await Chamadas.buscarTarefa(Number(id));
-        console.log("Tarefa recebida da API:", resposta);
+        const tipos = await Chamadas.listarTiposTarefa();
         setTarefa(resposta);
+        setTiposTarefa(tipos);
       } catch (error) {
-        Alert.alert("Erro", "Não foi possível carregar os detalhes da tarefa.");
+        Alert.alert("Erro", "Não foi possível carregar os dados.");
         console.error(error);
       } finally {
         setCarregando(false);
@@ -128,7 +132,6 @@ export default function DetalhesScreen() {
         {mostrarDataPicker && (
           <DateTimePicker
             mode="date"
-            
             display="spinner"
             value={new Date(tarefa.dataAgendamento)}
             onChange={(event, selectedDate) => {
@@ -163,11 +166,29 @@ export default function DetalhesScreen() {
         )}
 
         <Text style={styles.label}>Tipo de Tarefa</Text>
-        <TextInput
-          style={styles.input}
-          value={tarefa.tipoTarefa.nome}
-          editable={editavel}
-        />
+        {editavel ? (
+          <View style={[styles.input, { padding: 0 }]}>
+            <Picker
+              selectedValue={tarefa.tipoTarefa.id}
+              onValueChange={(itemValue) => {
+                const tipoSelecionado = tiposTarefa.find(tipo => tipo.id === itemValue);
+                if (tipoSelecionado) {
+                  setTarefa({ ...tarefa, tipoTarefa: tipoSelecionado });
+                }
+              }}
+            >
+              {tiposTarefa.map((tipo) => (
+                <Picker.Item key={tipo.id} label={tipo.nome} value={tipo.id} />
+              ))}
+            </Picker>
+          </View>
+        ) : (
+          <TextInput
+            style={styles.input}
+            value={tarefa.tipoTarefa.nome}
+            editable={false}
+          />
+        )}
 
         <Text style={styles.label}>Nível</Text>
         <TextInput
@@ -180,7 +201,11 @@ export default function DetalhesScreen() {
         />
 
         <Text style={styles.label}>Status</Text>
-        <TextInput style={styles.input} value={tarefa.statusTarefa} editable={false} />
+        <TextInput
+          style={styles.input}
+          value={tarefa.statusTarefa}
+          editable={false}
+        />
       </ScrollView>
 
       <View style={styles.botoesContainer}>
