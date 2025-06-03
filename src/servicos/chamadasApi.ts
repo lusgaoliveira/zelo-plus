@@ -78,5 +78,13 @@ export class Chamadas {
       throw error; 
     }
   } 
-  
+
+  static async criarTarefa(dados: any): Promise<void> {
+    try {
+      await instance.post("/tarefas", dados);
+    } catch (error) {
+      pegarErros(error);
+      throw error;
+    }
+  }
 }
