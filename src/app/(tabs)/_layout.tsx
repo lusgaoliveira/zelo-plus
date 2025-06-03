@@ -1,7 +1,9 @@
-import { Tabs } from "expo-router";
+import { Tabs, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function TabLayout() {
+  const { dados } = useLocalSearchParams();
+
   return (
     <Tabs
       screenOptions={{
@@ -17,6 +19,7 @@ export default function TabLayout() {
             <Ionicons name="home-outline" size={size} color={color} />
           ),
         }}
+        initialParams={{ dados }}
       />
       <Tabs.Screen
         name="criarTarefa/index"
@@ -26,8 +29,8 @@ export default function TabLayout() {
             <Ionicons name="add-circle-outline" size={size} color={color} />
           ),
         }}
+        initialParams={{ dados }}
       />
-
       <Tabs.Screen
         name="perfil/index"
         options={{
@@ -36,9 +39,8 @@ export default function TabLayout() {
             <Ionicons name="person-outline" size={size} color={color} />
           ),
         }}
+        initialParams={{ dados }}
       />
     </Tabs>
-
-    
   );
 }
