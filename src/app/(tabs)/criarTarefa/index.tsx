@@ -19,7 +19,7 @@ import { router, useLocalSearchParams } from "expo-router";
 export default function CriarTarefaScreen() {
   const { dados } = useLocalSearchParams();
   const usuario = dados ? JSON.parse(dados as string) : null;
-  const idIdoso = usuario?.id; // ID vindo dos params
+  const idIdoso = usuario?.id; 
 
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
