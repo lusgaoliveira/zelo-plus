@@ -1,6 +1,7 @@
 import instance from "../infra/axiosConfig";
 import { CriarUsuario } from "../modelos/CriarUsuario";
 import { Login } from "../modelos/Login";
+import { Perfil } from "../modelos/Perfil";
 import { TipoTarefa } from "../modelos/Tarefa";
 
 const pegarErros = (error: any): never => {
@@ -84,6 +85,15 @@ export class Chamadas {
       await instance.post("/tarefas", dados);
     } catch (error) {
       pegarErros(error);
+      throw error;
+    }
+  }
+  static async buscarPerfil(id: number): Promise<Perfil> {
+    try {
+      const resposta = await instance.get<Perfil>(`/usuarios/perfil/${id}`)
+      return resposta.data;
+    } catch (error) {
+      pegarErros(error)
       throw error;
     }
   }
