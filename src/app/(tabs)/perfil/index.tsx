@@ -14,14 +14,13 @@ import {
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Chamadas } from "../../../servicos/chamadasApi";
-import { Perfil } from "../../../modelos/Perfil"; 
+import { Perfil } from "../../../modelos/Perfil";
 import { useLocalSearchParams } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function PerfilScreen() {
   const { dados } = useLocalSearchParams();
-  const usuario = dados ? JSON.parse(dados as string) : null;
   const [perfil, setPerfil] = useState<Perfil | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [editavel, setEditavel] = useState(false);
@@ -29,8 +28,15 @@ export default function PerfilScreen() {
 
   useEffect(() => {
     const buscarPerfil = async () => {
-      if (!usuario?.id) {
+      if (!dados) {
         Alert.alert("Erro", "Usuário não encontrado.");
+        setCarregando(false);
+        return;
+      }
+
+      const usuario = JSON.parse(dados as string);
+      if (!usuario?.id) {
+        Alert.alert("Erro", "ID de usuário inválido.");
         setCarregando(false);
         return;
       }
@@ -44,8 +50,9 @@ export default function PerfilScreen() {
         setCarregando(false);
       }
     };
+
     buscarPerfil();
-  }, [usuario]);
+  }, [dados]);
 
   const selecionarImagem = async () => {
     if (!editavel) return;
@@ -57,24 +64,44 @@ export default function PerfilScreen() {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        quality: 1,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+      base64: true,
     });
 
+    if (!result.canceled && result.assets.length > 0) {
+      const asset = result.assets[0];
+      setPerfil((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          fotoPerfil: `data:image/jpeg;base64,${asset.base64}`,
+        };
+      });
+    }
+  };
 
-    if (!result.canceled && result.assets.length > 0 && perfil !== null) {
-        const imageUri = result.assets[0].uri;
+  const salvarPerfil = async () => {
+    if (!perfil) return;
 
-        setPerfil((prev) => {
-            if (!prev) return prev; 
+    try {
+      const base64 = perfil.fotoPerfil?.startsWith("data:image")
+        ? perfil.fotoPerfil.split(",")[1]
+        : undefined;
 
-            return {
-            ...prev,
-            fotoPerfil: imageUri,
-            };
-        });
-    } 
+      await Chamadas.atualizarPerfil(perfil.id, {
+        email: perfil.email,
+        nome: perfil.nome,
+        dataNascimento: perfil.dataNascimento,
+        fotoPerfilBase64: base64,
+      });
+
+      Alert.alert("Sucesso", "Perfil atualizado com sucesso.");
+      setEditavel(false);
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível atualizar o perfil.");
+    }
   };
 
   if (carregando) {
@@ -102,10 +129,7 @@ export default function PerfilScreen() {
         <Text style={styles.label}>Foto de Perfil</Text>
         <TouchableOpacity onPress={selecionarImagem}>
           {perfil.fotoPerfil && perfil.fotoPerfil.trim() !== "" ? (
-            <Image
-              source={{ uri: perfil.fotoPerfil }}
-              style={styles.fotoPerfil}
-            />
+            <Image source={{ uri: perfil.fotoPerfil }} style={styles.fotoPerfil} />
           ) : (
             <View style={styles.iconePerfil}>
               <Ionicons name="person-circle" size={100} color="#888" />
@@ -114,11 +138,7 @@ export default function PerfilScreen() {
         </TouchableOpacity>
 
         <Text style={styles.label}>Nome de Usuário</Text>
-        <TextInput
-          style={styles.input}
-          value={perfil.nomeUsuario}
-          editable={false}
-        />
+        <TextInput style={styles.input} value={perfil.nomeUsuario} editable={false} />
 
         <Text style={styles.label}>Email</Text>
         <TextInput
@@ -163,35 +183,16 @@ export default function PerfilScreen() {
         )}
 
         <Text style={styles.label}>Código de Vínculo</Text>
-        <TextInput
-          style={styles.input}
-          value={perfil.codigoVinculo}
-          editable={false}
-        />
+        <TextInput style={styles.input} value={perfil.codigoVinculo} editable={false} />
       </ScrollView>
 
       <View style={styles.botoesContainer}>
-        <TouchableOpacity
-          style={styles.botaoSecundario}
-          onPress={() => setEditavel(!editavel)}
-        >
-          <Text style={styles.botaoTexto}>
-            {editavel ? "Cancelar" : "Editar"}
-          </Text>
+        <TouchableOpacity style={styles.botaoSecundario} onPress={() => setEditavel(!editavel)}>
+          <Text style={styles.botaoTexto}>{editavel ? "Cancelar" : "Editar"}</Text>
         </TouchableOpacity>
+
         {editavel && (
-          <TouchableOpacity
-            style={styles.botaoPrincipal}
-            // onPress={async () => {
-            //   try {
-            //     await Chamadas.atualizarPerfil(perfil);
-            //     Alert.alert("Sucesso", "Perfil atualizado com sucesso.");
-            //     setEditavel(false);
-            //   } catch (error) {
-            //     Alert.alert("Erro", "Não foi possível atualizar o perfil.");
-            //   }
-            // }}
-          >
+          <TouchableOpacity style={styles.botaoPrincipal} onPress={salvarPerfil}>
             <Text style={styles.botaoTexto}>Salvar</Text>
           </TouchableOpacity>
         )}
