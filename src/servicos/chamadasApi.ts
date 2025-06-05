@@ -2,7 +2,9 @@ import instance from "../infra/axiosConfig";
 import { CriarUsuario } from "../modelos/CriarUsuario";
 import { Login } from "../modelos/Login";
 import { Perfil } from "../modelos/Perfil";
-import { TipoTarefa } from "../modelos/Tarefa";
+import { Tarefa, TipoTarefa } from "../modelos/Tarefa";
+
+import * as FileSystem from "expo-file-system";
 
 const pegarErros = (error: any): never => {
   if (error.response) {
@@ -82,7 +84,27 @@ export class Chamadas {
 
   static async criarTarefa(dados: any): Promise<void> {
     try {
-      await instance.post("/tarefas", dados);
+      console.log(dados)
+      await instance.post("/tarefas/criar", dados);
+    } catch (error) {
+      pegarErros(error);
+      throw error;
+    }
+  }
+
+  static async concluirTarefa(idTarefa: number): Promise<void> {
+    try {
+      const resposta = await instance.patch(`/tarefas/concluir/${idTarefa}`)
+      return resposta.data;
+    } catch (error) {
+      pegarErros(error)
+      throw error;
+    }
+  }
+  static async atualizarTarefa(id: number, dados: Partial<Tarefa>): Promise<Tarefa> {
+    try {
+      const resposta = await instance.patch(`/tarefas/${id}`, dados);
+      return resposta.data;
     } catch (error) {
       pegarErros(error);
       throw error;
@@ -94,6 +116,27 @@ export class Chamadas {
       return resposta.data;
     } catch (error) {
       pegarErros(error)
+      throw error;
+    }
+  }
+
+
+  static async atualizarPerfil(id: number, dados: any): Promise<void> {
+    try {
+      const payload = { ...dados };
+
+      // Se a foto já estiver em base64, extraímos apenas o conteúdo necessário
+      if (dados.fotoPerfil && dados.fotoPerfil.startsWith("data:image")) {
+        payload.fotoPerfilBase64 = dados.fotoPerfil.split(",")[1];
+      }
+
+      // Removemos a URI base64 completa, já que o backend espera apenas o conteúdo
+      delete payload.fotoPerfil;
+
+      const resposta = await instance.patch(`/usuarios/${id}/perfil`, payload);
+      return resposta.data;
+    } catch (error) {
+      pegarErros(error);
       throw error;
     }
   }
