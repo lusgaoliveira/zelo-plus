@@ -15,6 +15,7 @@ import { Picker } from "@react-native-picker/picker";
 import { Chamadas } from "../../../servicos/chamadasApi";
 import { TipoTarefa } from "../../../modelos/Tarefa";
 import { router, useLocalSearchParams } from "expo-router";
+import * as Burnt from "burnt";
 
 export default function CriarTarefaScreen() {
   const { dados } = useLocalSearchParams();
@@ -31,6 +32,10 @@ export default function CriarTarefaScreen() {
   const [nivel, setNivel] = useState<number>(1);
   const [carregando, setCarregando] = useState(true);
 
+  function formatAsLocalISOString(date: Date): string {
+    const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  }
   useEffect(() => {
     const carregarTipos = async () => {
       try {
@@ -47,15 +52,19 @@ export default function CriarTarefaScreen() {
 
   const criarTarefa = async () => {
     if (!tipoSelecionado) {
-      Alert.alert("Atenção", "Selecione um tipo de tarefa.");
+      Burnt.toast({
+        title: "Eita, problema!",
+        message: "Verifque os campos",
+        preset: "error",
+      });
       return;
     }
 
     const tarefaDTO = {
       titulo,
       descricao,
-      dataCriacao: new Date().toISOString(),
-      dataAgendamento: dataAgendamento.toISOString(),
+      dataCriacao: formatAsLocalISOString(new Date()),
+      dataAgendamento: formatAsLocalISOString(dataAgendamento),
       idTipoTarefa: tipoSelecionado,
       idIdoso,
       nivel,
@@ -63,10 +72,18 @@ export default function CriarTarefaScreen() {
 
     try {
       await Chamadas.criarTarefa(tarefaDTO);
-      Alert.alert("Sucesso", "Tarefa criada com sucesso!");
+      Burnt.toast({
+        title: "Sucesso",
+        message: "Tarefa criada com sucesso!",
+        preset: "done",
+      });
       router.back();
     } catch (error) {
-      Alert.alert("Erro", "Erro ao criar a tarefa.");
+      Burnt.toast({
+        title: "Erro",
+        message: "Erro ao criar a tarefa!",
+        preset: "error",
+      });
     }
   };
 
@@ -161,14 +178,18 @@ export default function CriarTarefaScreen() {
       </View>
 
       <Text style={styles.label}>Nível</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={nivel.toString()}
-        onChangeText={(valor) => setNivel(Number(valor))}
-      />
+      <View style={styles.pickerWrapper}>
+        <Picker
+          selectedValue={nivel}
+          onValueChange={(itemValue) => setNivel(itemValue)}
+        >
+          {[1, 2, 3, 4, 5].map((n) => (
+            <Picker.Item key={n} label={`${n}`} value={n} />
+          ))}
+        </Picker>
+      </View>
 
-      <TouchableOpacity style={styles.botao} onPress={criarTarefa}>
+      <TouchableOpacity style={styles.botao} onPress={() => criarTarefa()}>
         <Text style={styles.botaoTexto}>Criar Tarefa</Text>
       </TouchableOpacity>
     </ScrollView>
