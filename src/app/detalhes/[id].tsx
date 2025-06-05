@@ -17,6 +17,7 @@ import { Chamadas } from "../../servicos/chamadasApi";
 import { Tarefa } from "../../modelos/Tarefa";
 import { TipoTarefa } from "../../modelos/Tarefa";
 import { Picker } from "@react-native-picker/picker";
+import * as Burnt from "burnt";
 
 export default function DetalhesScreen() {
   const { id } = useLocalSearchParams();
@@ -26,6 +27,45 @@ export default function DetalhesScreen() {
   const [editavel, setEditavel] = useState(false);
   const [mostrarDataPicker, setMostrarDataPicker] = useState(false);
   const [mostrarHoraPicker, setMostrarHoraPicker] = useState(false);
+
+  const concluirTarefa = async (idTarefa: number) => {
+    try {
+      await Chamadas.concluirTarefa(idTarefa);
+      Burnt.toast({
+        title: "Tudo Certo",
+        message: "Tarefa concluída com sucesso",
+        preset: "done",
+      });
+      router.back(); 
+    } catch (error: any) {
+      console.error("Erro ao concluir tarefa:", error);
+      Burnt.toast({
+        title: "Erro",
+        message: "Erro ao concluir tarefa",
+        preset: "error",
+      });
+    }
+  };
+
+  const salvarTarefa = async () => {
+    try {
+      if (!tarefa) return;
+      await Chamadas.atualizarTarefa(tarefa.id, tarefa);
+      Burnt.toast({
+        title: "Tudo Certo",
+        message: "Tarefa atualizada com sucesso",
+        preset: "done",
+      });
+      setEditavel(false);
+    } catch (error: any) {
+      console.error("Erro ao salvar tarefa:", error);
+      Burnt.toast({
+        title: "Erro",
+        message: "Não foi possível salvar a tarefa",
+        preset: "error",
+      });
+    }
+  };
 
   useEffect(() => {
     const buscarTarefa = async () => {
@@ -171,7 +211,9 @@ export default function DetalhesScreen() {
             <Picker
               selectedValue={tarefa.tipoTarefa.id}
               onValueChange={(itemValue) => {
-                const tipoSelecionado = tiposTarefa.find(tipo => tipo.id === itemValue);
+                const tipoSelecionado = tiposTarefa.find(
+                  (tipo) => tipo.id === itemValue
+                );
                 if (tipoSelecionado) {
                   setTarefa({ ...tarefa, tipoTarefa: tipoSelecionado });
                 }
@@ -191,14 +233,26 @@ export default function DetalhesScreen() {
         )}
 
         <Text style={styles.label}>Nível</Text>
-        <TextInput
-          style={styles.input}
-          value={String(tarefa.nivel)}
-          editable={editavel}
-          onChangeText={(text) =>
-            setTarefa({ ...tarefa, nivel: Number(text) })
-          }
-        />
+        {editavel ? (
+          <View style={[styles.input, { padding: 0 }]}>
+            <Picker
+              selectedValue={tarefa.nivel}
+              onValueChange={(itemValue) =>
+                setTarefa({ ...tarefa, nivel: itemValue })
+              }
+            >
+              {[1, 2, 3, 4, 5].map((nivel) => (
+                <Picker.Item key={nivel} label={`Nível ${nivel}`} value={nivel} />
+              ))}
+            </Picker>
+          </View>
+        ) : (
+          <TextInput
+            style={styles.input}
+            value={String(tarefa.nivel)}
+            editable={false}
+          />
+        )}
 
         <Text style={styles.label}>Status</Text>
         <TextInput
@@ -209,14 +263,31 @@ export default function DetalhesScreen() {
       </ScrollView>
 
       <View style={styles.botoesContainer}>
-        <TouchableOpacity style={styles.botaoSecundario} onPress={() => router.back()}>
+        <TouchableOpacity
+          style={styles.botaoSecundario}
+          onPress={() => router.back()}
+        >
           <Text style={styles.botaoTexto}>Voltar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.botaoPrincipal} onPress={() => setEditavel(!editavel)}>
-          <Text style={styles.botaoTexto}>{editavel ? "Cancelar" : "Editar"}</Text>
+
+        <TouchableOpacity
+          style={styles.botaoPrincipal}
+          onPress={() => setEditavel(!editavel)}
+        >
+          <Text style={styles.botaoTexto}>
+            {editavel ? "Cancelar" : "Editar"}
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.botaoFinalizar}>
-          <Text style={styles.botaoTexto}>Concluir</Text>
+
+        <TouchableOpacity
+          style={styles.botaoFinalizar}
+          onPress={() =>
+            editavel ? salvarTarefa() : concluirTarefa(tarefa.id)
+          }
+        >
+          <Text style={styles.botaoTexto}>
+            {editavel ? "Salvar" : "Concluir"}
+          </Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
