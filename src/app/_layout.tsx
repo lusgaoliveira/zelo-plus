@@ -14,6 +14,7 @@ export default function Layout() {
             <Stack.Screen name = "recuperarSenha/index" options={{title : "Recuperar Senha"}}/>
             <Stack.Screen name = "cadastro/index" options={{title: "Cadastro"}}/>
             <Stack.Screen name = "(tabs)" options={{headerShown: false}}/>
+            <Stack.Screen name="detalhes/[id]" options={{ headerShown: false, headerTitle: "" }} />
         </Stack>
     )
 }
