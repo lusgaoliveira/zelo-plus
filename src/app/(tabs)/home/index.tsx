@@ -151,9 +151,14 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.topo}>
-        <Text style={styles.titulo}>Tarefas</Text>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => router.replace("/login")}>
+            <MaterialIcons name="logout" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
       </View>
-
+      
+    
       <View style={styles.listaContainer}>
         <FlatList
           data={agruparPorData(tarefas)}
@@ -206,6 +211,11 @@ const styles = StyleSheet.create({
     flex: 0.5,
     padding: 16,
     backgroundColor: "#FFFAEC",
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   titulo: {
     fontSize: 22,
