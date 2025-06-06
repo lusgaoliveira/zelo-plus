@@ -15,9 +15,10 @@ import {
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Chamadas } from "../../../servicos/chamadasApi";
 import { Perfil } from "../../../modelos/Perfil";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import * as Burnt from "burnt";
 
 export default function PerfilScreen() {
   const { dados } = useLocalSearchParams();
@@ -25,18 +26,27 @@ export default function PerfilScreen() {
   const [carregando, setCarregando] = useState(true);
   const [editavel, setEditavel] = useState(false);
   const [mostrarDatePicker, setMostrarDatePicker] = useState(false);
+  const usuario = dados ? JSON.parse(dados as string) : null;
 
   useEffect(() => {
     const buscarPerfil = async () => {
       if (!dados) {
-        Alert.alert("Erro", "Usuário não encontrado.");
+        Burnt.toast({
+          title: "Erro",
+          message: "Usuário não encontrado",
+          preset: "error",
+        });
         setCarregando(false);
         return;
       }
 
       const usuario = JSON.parse(dados as string);
       if (!usuario?.id) {
-        Alert.alert("Erro", "ID de usuário inválido.");
+        Burnt.toast({
+          title: "Erro",
+          message: "ID de usuário inválido",
+          preset: "error",
+        });
         setCarregando(false);
         return;
       }
@@ -45,7 +55,11 @@ export default function PerfilScreen() {
         const resposta = await Chamadas.buscarPerfil(usuario.id);
         setPerfil(resposta);
       } catch (error) {
-        Alert.alert("Erro", "Erro ao buscar perfil.");
+        Burnt.toast({
+          title: "Erro",
+          message: "IErro ao buscar perfil",
+          preset: "error",
+        });
       } finally {
         setCarregando(false);
       }
@@ -54,6 +68,20 @@ export default function PerfilScreen() {
     buscarPerfil();
   }, [dados]);
 
+  const gerarCodigoVinculo = async () => {
+    if (!perfil) return;
+
+    try {
+      await Chamadas.gerarVinculo(perfil.id);
+      const resposta = await Chamadas.buscarPerfil(perfil.id); 
+      setPerfil(resposta);
+      Alert.alert("Sucesso", "Código de vínculo gerado com sucesso!");
+    } catch (error) {
+      Alert.alert("Erro", "Não foi possível gerar o código de vínculo.");
+    }
+  };
+
+  
   const selecionarImagem = async () => {
     if (!editavel) return;
 
@@ -184,12 +212,35 @@ export default function PerfilScreen() {
 
         <Text style={styles.label}>Código de Vínculo</Text>
         <TextInput style={styles.input} value={perfil.codigoVinculo} editable={false} />
+        
+
+        {perfil?.tipoUsuario === "IDOSO" && !perfil.codigoVinculo && (
+          <TouchableOpacity
+            style={[styles.botaoPrincipal, { marginTop: 10 }]}
+            onPress={gerarCodigoVinculo}
+          >
+            <Text style={styles.botaoTexto}>Gerar Código de Vínculo</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
 
       <View style={styles.botoesContainer}>
         <TouchableOpacity style={styles.botaoSecundario} onPress={() => setEditavel(!editavel)}>
           <Text style={styles.botaoTexto}>{editavel ? "Cancelar" : "Editar"}</Text>
         </TouchableOpacity>
+        {!editavel && (
+          <TouchableOpacity
+            style={styles.botaoNovaSenha}
+            onPress={() =>
+              router.push({
+                pathname: "/novaSenha/[id]",
+                params: { id: usuario?.id.toString() },
+              })
+            }
+          >
+            <Text style={styles.botaoTexto}>Alterar Senha</Text>
+          </TouchableOpacity>
+        )}
 
         {editavel && (
           <TouchableOpacity style={styles.botaoPrincipal} onPress={salvarPerfil}>
@@ -204,7 +255,7 @@ export default function PerfilScreen() {
 const styles = StyleSheet.create({
   tela: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFAEC",
   },
   container: {
     padding: 20,
@@ -231,7 +282,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 8,
     padding: 12,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFAEC",
   },
   botaoPrincipal: {
     flex: 1,
@@ -243,6 +294,13 @@ const styles = StyleSheet.create({
   botaoSecundario: {
     flex: 1,
     backgroundColor: "#4A6FA5",
+    paddingVertical: 14,
+    borderRadius: 8,
+    marginHorizontal: 4,
+  },
+  botaoNovaSenha: {
+    flex: 1,
+    backgroundColor: "red",
     paddingVertical: 14,
     borderRadius: 8,
     marginHorizontal: 4,
