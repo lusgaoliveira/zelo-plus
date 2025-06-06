@@ -140,4 +140,14 @@ export class Chamadas {
       throw error;
     }
   }
+
+  static async gerarVinculo(id: number): Promise<void> {
+    try {
+      const resposta = await instance.patch(`/usuarios/gerar-vinculo/${id}`);
+      return resposta.data;
+    } catch (error) {
+      pegarErros(error)
+      throw error;
+    }
+  }
 }
