@@ -47,6 +47,25 @@ export default function DetalhesScreen() {
     }
   };
 
+  const excluirTarefa = async (idTarefa: number) => {
+    try {
+      await Chamadas.excluirTarefa(idTarefa); // você precisa ter essa função em Chamadas
+      Burnt.toast({
+        title: "Excluído",
+        message: "Tarefa excluída com sucesso",
+        preset: "done",
+      });
+      router.back();
+    } catch (error: any) {
+      console.error("Erro ao excluir tarefa:", error);
+      Burnt.toast({
+        title: "Erro",
+        message: "Erro ao excluir tarefa",
+        preset: "error",
+      });
+    }
+  };
+
   const salvarTarefa = async () => {
     try {
       if (!tarefa) return;
@@ -262,6 +281,7 @@ export default function DetalhesScreen() {
         />
       </ScrollView>
 
+      
       <View style={styles.botoesContainer}>
         <TouchableOpacity
           style={styles.botaoSecundario}
@@ -281,15 +301,30 @@ export default function DetalhesScreen() {
 
         <TouchableOpacity
           style={styles.botaoFinalizar}
-          onPress={() =>
-            editavel ? salvarTarefa() : concluirTarefa(tarefa.id)
-          }
+          onPress={() => (editavel ? salvarTarefa() : concluirTarefa(tarefa.id))}
         >
           <Text style={styles.botaoTexto}>
             {editavel ? "Salvar" : "Concluir"}
           </Text>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botaoExcluir}
+          onPress={() => {
+            Alert.alert(
+              "Confirmar exclusão",
+              "Tem certeza que deseja excluir esta tarefa?",
+              [
+                { text: "Cancelar", style: "cancel" },
+                { text: "Excluir", style: "destructive", onPress: () => excluirTarefa(tarefa.id) },
+              ]
+            );
+          }}
+        >
+          <Text style={styles.botaoTexto}>Excluir</Text>
+        </TouchableOpacity>
       </View>
+
     </KeyboardAvoidingView>
   );
 }
@@ -357,6 +392,13 @@ const styles = StyleSheet.create({
   botaoFinalizar: {
     flex: 1,
     backgroundColor: "#ff4d4d",
+    paddingVertical: 14,
+    borderRadius: 8,
+    marginHorizontal: 4,
+  },
+  botaoExcluir: {
+    flex: 1,
+    backgroundColor: "#6c757d", 
     paddingVertical: 14,
     borderRadius: 8,
     marginHorizontal: 4,
