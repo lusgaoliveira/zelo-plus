@@ -4,14 +4,13 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
-  Alert,
   TouchableOpacity,
   StyleSheet,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Tarefas } from "../../../modelos/Tarefas";
 import { Chamadas } from "../../../servicos/chamadasApi";
-import { MaterialIcons, FontAwesome5, Feather } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome5, Feather, Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Burnt from "burnt";
 
@@ -27,12 +26,10 @@ export default function HomeScreen() {
   const [carregandoPagina, setCarregandoPagina] = useState(false);
   const [isScrollStarted, setIsScrollStarted] = useState(false);
 
-  // refs para evitar stale closure
   const paginaRef = useRef(pagina);
   const temMaisPaginasRef = useRef(temMaisPaginas);
   const carregandoPaginaRef = useRef(carregandoPagina);
 
-  // Sincroniza refs sempre que o estado mudar
   paginaRef.current = pagina;
   temMaisPaginasRef.current = temMaisPaginas;
   carregandoPaginaRef.current = carregandoPagina;
@@ -64,7 +61,6 @@ export default function HomeScreen() {
       setPagina(0);
       setTemMaisPaginas(true);
       setLoading(true);
-      // Faz uma pequena espera para garantir o reset do estado antes da chamada
 
       setTimeout(() => {
         buscarTarefas();
@@ -109,6 +105,41 @@ export default function HomeScreen() {
     </TouchableOpacity>
   );
 
+  const formatarData = (dataISO: string) => {
+    const data = new Date(dataISO);
+    data.setMinutes(data.getMinutes() + data.getTimezoneOffset()); // Corrigir fuso
+    return data.toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
+
+  const agruparPorData = (tarefas: Tarefas[]) => {
+    const agrupadas: { [data: string]: Tarefas[] } = {};
+
+    tarefas.forEach((tarefa) => {
+      const dataFormatada = formatarData(tarefa.dataAgendamento);
+      if (!agrupadas[dataFormatada]) {
+        agrupadas[dataFormatada] = [];
+      }
+      agrupadas[dataFormatada].push(tarefa);
+    });
+
+    const listaRenderizavel: any[] = [];
+
+    Object.keys(agrupadas)
+      .sort((a, b) => new Date(b).getTime() - new Date(a).getTime()) // Ordem decrescente
+      .forEach((data) => {
+        listaRenderizavel.push({ tipo: "header", data });
+        agrupadas[data].forEach((tarefa) => {
+          listaRenderizavel.push({ tipo: "item", tarefa });
+        });
+      });
+
+    return listaRenderizavel;
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -125,9 +156,21 @@ export default function HomeScreen() {
 
       <View style={styles.listaContainer}>
         <FlatList
-          data={tarefas}
-          keyExtractor={(item, index) => `${item.id}-${index}`}
-          renderItem={renderItem}
+          data={agruparPorData(tarefas)}
+          keyExtractor={(item, index) =>
+            item.tipo === "header" ? `header-${item.data}-${index}` : `tarefa-${item.tarefa.id}-${index}`
+          }
+          renderItem={({ item }) => {
+            if (item.tipo === "header") {
+              return (
+                <View style={styles.dataHeader}>
+                  <Ionicons name="calendar-outline" size={18} color="#333" />
+                  <Text style={styles.dataHeaderText}>{item.data}</Text>
+                </View>
+              );
+            }
+            return renderItem({ item: item.tarefa });
+          }}
           onEndReached={() => {
             if (isScrollStarted) {
               carregarMais();
@@ -157,12 +200,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFAEC",
   },
   topo: {
     flex: 0.5,
     padding: 16,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#FFFAEC",
   },
   titulo: {
     fontSize: 22,
@@ -172,8 +215,22 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 8,
   },
+  dataHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    marginTop: 12,
+    borderRadius: 6,
+  },
+  dataHeaderText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+  },
   item: {
-    backgroundColor: "#e0e0e0",
+    backgroundColor: "#FFFFFF",
     marginVertical: 8,
     padding: 16,
     borderRadius: 8,
