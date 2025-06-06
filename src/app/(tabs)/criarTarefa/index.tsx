@@ -20,7 +20,7 @@ import * as Burnt from "burnt";
 export default function CriarTarefaScreen() {
   const { dados } = useLocalSearchParams();
   const usuario = dados ? JSON.parse(dados as string) : null;
-  const idIdoso = usuario?.id; 
+  const id = usuario?.id; 
 
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -66,7 +66,7 @@ export default function CriarTarefaScreen() {
       dataCriacao: formatAsLocalISOString(new Date()),
       dataAgendamento: formatAsLocalISOString(dataAgendamento),
       idTipoTarefa: tipoSelecionado,
-      idIdoso,
+      id,
       nivel,
     };
 
@@ -198,7 +198,9 @@ export default function CriarTarefaScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
+    backgroundColor: "#FFFAEC"
   },
   label: {
     fontWeight: "bold",
