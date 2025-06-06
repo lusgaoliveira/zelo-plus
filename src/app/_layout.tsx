@@ -10,11 +10,13 @@ export default function Layout() {
             }}
         >
             
-            <Stack.Screen name = "login/index" options={{title : "Login"}}/>
-            <Stack.Screen name = "recuperarSenha/index" options={{title : "Recuperar Senha"}}/>
-            <Stack.Screen name = "cadastro/index" options={{title: "Cadastro"}}/>
+            <Stack.Screen name = "login/index" options={{headerShown: false}}/>
+            <Stack.Screen name = "recuperarSenha/index" options={{headerShown: false}}/>
+            <Stack.Screen name = "cadastro/index" options={{headerShown: false}}/>
+            <Stack.Screen name = "novaSenha/[id]" options={{headerShown: false}}/>
             <Stack.Screen name = "(tabs)" options={{headerShown: false}}/>
-            <Stack.Screen name="detalhes/[id]" options={{ headerShown: false, headerTitle: "" }} />
+            <Stack.Screen name="detalhes/[id]" options={{ headerShown: false}} />
+            
         </Stack>
     )
 }
