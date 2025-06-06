@@ -297,7 +297,7 @@ export default function DetalhesScreen() {
 const styles = StyleSheet.create({
   tela: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFAEC",
   },
   container: {
     padding: 20,
@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 8,
     padding: 12,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFAEC",
     marginBottom: 10,
   },
   botaoPrincipal: {
