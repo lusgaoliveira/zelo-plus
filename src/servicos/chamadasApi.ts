@@ -101,6 +101,16 @@ export class Chamadas {
       throw error;
     }
   }
+
+  static async excluirTarefa(idTarefa: number): Promise<void> {
+    try {
+      const resposta = await instance.patch(`/tarefas/excluir/${idTarefa}`)
+      return resposta.data;
+    } catch (error) {
+      pegarErros(error)
+      throw error;
+    }
+  }
   static async atualizarTarefa(id: number, dados: Partial<Tarefa>): Promise<Tarefa> {
     try {
       const resposta = await instance.patch(`/tarefas/${id}`, dados);
