@@ -45,6 +45,7 @@ export class Chamadas {
         ...dados,
         dataNascimento: converterDataBrasileiraParaISO(dados.dataNascimento),
       };
+      console.log(dados)
       const resposta = await instance.post("/usuarios/criar", payload);
       return resposta.data;
     } catch (error) {
