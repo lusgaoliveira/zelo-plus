@@ -9,14 +9,14 @@ import { Chamadas } from "../../servicos/chamadasApi";
 import { router } from "expo-router";
 
 export default function CadastroScreen() {
-  const [nomeCompleto, setNomeCompleto] = useState("");
+  const [nome, setNome] = useState("");
   const [usuario, setUsuario] = useState("");
   const [senha, setSenha] = useState("");
-  const [tipo, setTipo] = useState<"Idoso" | "Cuidador" | null>(null);
-  const [nomeIdoso, setNomeIdoso] = useState("");
+  const [tipo, setTipo] = useState<"IDOSO" | "CUIDADOR" | null>(null);
+  const [codigoIdoso, setCodigoIdoso] = useState("");
   const [email, setEmail] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
-  const [fotoPerfilUrl, setFotoPerfilUrl] = useState("");
+  const [fotoPerfil, setFotoPerfil] = useState("");
 
   const formatarData = (texto: string) => {
     const numeros = texto.replace(/\D/g, "");
@@ -34,20 +34,22 @@ export default function CadastroScreen() {
   };
 
   const criarUsuario = async () => {
-    if (!usuario || !senha || !email || !nomeCompleto || !dataNascimento) {
+    if (!usuario || !senha || !email || !nome || !dataNascimento) {
       Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
       return;
     }
 
-    const novoUsuario: CriarUsuario = {
-      nomeUsuario: usuario,
-      senha: senha,
-      email: email,
-      fotoPerfilUrl: fotoPerfilUrl || "", // pode ficar vazio
-      nome: nomeCompleto,
-      dataNascimento: dataNascimento,
-      codigoVinculo: tipo === "Cuidador" ? nomeIdoso || null : null,
-    };
+   const novoUsuario: CriarUsuario = {
+    nomeUsuario: usuario,
+    senha: senha,
+    email: email,
+    fotoPerfil: fotoPerfil || "",
+    nome: nome,
+    dataNascimento: dataNascimento,
+    codigoVinculo: tipo === "CUIDADOR" ? codigoIdoso || null : null,
+    tipoUsuario: (tipo === "CUIDADOR" && codigoIdoso) ? "CUIDADOR" : "IDOSO",
+  };
+
 
     try {
       const resposta = await Chamadas.criarUsuario(novoUsuario);
@@ -82,8 +84,8 @@ export default function CadastroScreen() {
             <TextInput
               style={styles.input}
               placeholder="Nome Completo"
-              value={nomeCompleto}
-              onChangeText={setNomeCompleto}
+              value={nome}
+              onChangeText={setNome}
             />
           </View>
 
@@ -136,8 +138,8 @@ export default function CadastroScreen() {
             <TextInput
               style={styles.input}
               placeholder="URL da Foto de Perfil (opcional)"
-              value={fotoPerfilUrl}
-              onChangeText={setFotoPerfilUrl}
+              value={fotoPerfil}
+              onChangeText={setFotoPerfil}
             />
           </View>
 
@@ -147,25 +149,25 @@ export default function CadastroScreen() {
               <Text>Idoso</Text>
               <Checkbox
                 style={styles.inputCheckbox}
-                value={tipo === "Idoso"}
-                onValueChange={() => setTipo("Idoso")}
+                value={tipo === "IDOSO"}
+                onValueChange={() => setTipo("IDOSO")}
               />
               <Text>Cuidador</Text>
               <Checkbox
                 style={styles.inputCheckbox}
-                value={tipo === "Cuidador"}
-                onValueChange={() => setTipo("Cuidador")}
+                value={tipo === "CUIDADOR"}
+                onValueChange={() => setTipo("CUIDADOR")}
               />
             </View>
           </View>
 
-          {tipo === "Cuidador" && (
+          {tipo === "CUIDADOR" && (
             <View style={styles.inputGroup}>
               <Ionicons name="code-working" size={20} color="#444" />
               <TextInput
                 style={styles.input}
-                value={nomeIdoso}
-                onChangeText={setNomeIdoso}
+                value={codigoIdoso}
+                onChangeText={setCodigoIdoso}
                 maxLength={8}
                 placeholder="Digite o código de vínculo do idoso assistido"
               />
