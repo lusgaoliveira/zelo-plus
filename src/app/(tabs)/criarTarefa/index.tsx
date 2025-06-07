@@ -20,7 +20,7 @@ import * as Burnt from "burnt";
 export default function CriarTarefaScreen() {
   const { dados } = useLocalSearchParams();
   const usuario = dados ? JSON.parse(dados as string) : null;
-  const id = usuario?.id; 
+  const id = usuario.tipoUsuario === "CUIDADOR" ? usuario.codigo : usuario.id;
 
   const [titulo, setTitulo] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -36,6 +36,7 @@ export default function CriarTarefaScreen() {
     const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
   }
+
   useEffect(() => {
     const carregarTipos = async () => {
       try {
@@ -102,7 +103,7 @@ export default function CriarTarefaScreen() {
 
       <Text style={styles.label}>Descrição</Text>
       <TextInput
-        style={styles.input}
+        style={[styles.input, { height: 80 }]}
         value={descricao}
         onChangeText={setDescricao}
         multiline
@@ -113,14 +114,16 @@ export default function CriarTarefaScreen() {
         style={styles.input}
         onPress={() => setMostrarData(true)}
       >
-        <Text>{dataAgendamento.toLocaleDateString("pt-BR")}</Text>
+        <Text style={styles.textInput}>
+          {dataAgendamento.toLocaleDateString("pt-BR")}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.input}
         onPress={() => setMostrarHora(true)}
       >
-        <Text>
+        <Text style={styles.textInput}>
           {dataAgendamento.toLocaleTimeString("pt-BR", {
             hour: "2-digit",
             minute: "2-digit",
@@ -169,6 +172,7 @@ export default function CriarTarefaScreen() {
         <Picker
           selectedValue={tipoSelecionado}
           onValueChange={(itemValue) => setTipoSelecionado(itemValue)}
+          style={styles.picker}
         >
           <Picker.Item label="Selecione um tipo..." value={null} />
           {tipos.map((tipo) => (
@@ -182,6 +186,7 @@ export default function CriarTarefaScreen() {
         <Picker
           selectedValue={nivel}
           onValueChange={(itemValue) => setNivel(itemValue)}
+          style={styles.picker}
         >
           {[1, 2, 3, 4, 5].map((n) => (
             <Picker.Item key={n} label={`${n}`} value={n} />
@@ -189,7 +194,7 @@ export default function CriarTarefaScreen() {
         </Picker>
       </View>
 
-      <TouchableOpacity style={styles.botao} onPress={() => criarTarefa()}>
+      <TouchableOpacity style={styles.botao} onPress={criarTarefa}>
         <Text style={styles.botaoTexto}>Criar Tarefa</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -198,40 +203,50 @@ export default function CriarTarefaScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#FFFAEC"
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: 24,
+    backgroundColor: "#FFFAEC",
   },
   label: {
     fontWeight: "bold",
-    marginTop: 10,
+    marginTop: 16,
+    fontSize: 18,
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 6,
-    padding: 10,
-    marginTop: 4,
+    padding: 14,
+    marginTop: 6,
     backgroundColor: "#f5f5f5",
+    fontSize: 16,
+  },
+  textInput: {
+    fontSize: 16,
   },
   pickerWrapper: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 6,
-    marginTop: 4,
+    marginTop: 6,
     backgroundColor: "#f5f5f5",
+    paddingHorizontal: 10,
+  },
+  picker: {
+    fontSize: 16,
   },
   botao: {
     backgroundColor: "#28A745",
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginTop: 20,
+    paddingVertical: 16,
+    borderRadius: 10,
+    marginTop: 24,
   },
   botaoTexto: {
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 18,
   },
   centered: {
     flex: 1,
