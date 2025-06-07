@@ -14,24 +14,30 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#000",
         tabBarStyle: {
           backgroundColor: "#FFFAEC",
-          borderTopWidth: 0,
-          height: 100,
-          paddingBottom: 20,
-          paddingTop: 10,
+          borderTopWidth: 1,
+          height: 125, 
+          paddingTop: 25, 
+          paddingBottom: 25, 
           elevation: 0,
+        },
+        tabBarItemStyle: {
+          justifyContent: "center",
+          alignItems: "center",
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "600",
+          marginTop: 15,
         },
       }}
     >
+
       <Tabs.Screen
         name="home/index"
         options={{
           title: "Início",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="home-outline" size={30} color={color} />
+            <Ionicons name="home-outline" size={35} color={color} />
           ),
         }}
         initialParams={{ dados }}
@@ -42,7 +48,7 @@ export default function TabLayout() {
         options={{
           title: "Adicionar Tarefa",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="add-circle-outline" size={30} color={color} />
+            <Ionicons name="add-circle-outline" size={35} color={color} />
           ),
         }}
         initialParams={{ dados }}
@@ -53,7 +59,7 @@ export default function TabLayout() {
         options={{
           title: "Seu Perfil",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="person-outline" size={30} color={color} />
+            <Ionicons name="person-outline" size={35} color={color} />
           ),
         }}
         initialParams={{ dados }}
@@ -64,7 +70,7 @@ export default function TabLayout() {
         options={{
           title: "Relatório",
           tabBarIcon: ({ color }) => (
-            <Ionicons name="bar-chart-outline" size={30} color={color} />
+            <Ionicons name="bar-chart-outline" size={35} color={color} />
           ),
           // Oculta a aba para IDOSO
           tabBarButton: tipoUsuario === "IDOSO" ? () => null : undefined,
