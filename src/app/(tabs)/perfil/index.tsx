@@ -75,9 +75,17 @@ export default function PerfilScreen() {
       await Chamadas.gerarVinculo(perfil.id);
       const resposta = await Chamadas.buscarPerfil(perfil.id); 
       setPerfil(resposta);
-      Alert.alert("Sucesso", "Código de vínculo gerado com sucesso!");
+      Burnt.toast({
+        title: "Sucesso",
+        message: "Código de vínculo gerado com sucesso!",
+        preset: "done",
+      });
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível gerar o código de vínculo.");
+        Burnt.toast({
+          title: "Erro",
+          message: "Não foi possível gerar o código de vínculo!",
+          preset: "error",
+        });
     }
   };
 
@@ -87,7 +95,11 @@ export default function PerfilScreen() {
 
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permissão negada", "Permita o acesso à galeria para alterar a foto.");
+      Burnt.toast({
+        title: "Permissão negada",
+        message: "Permita o acesso à galeria para alterar a foto!",
+        preset: "error",
+      });
       return;
     }
 
@@ -124,11 +136,18 @@ export default function PerfilScreen() {
         dataNascimento: perfil.dataNascimento,
         fotoPerfilBase64: base64,
       });
-
-      Alert.alert("Sucesso", "Perfil atualizado com sucesso.");
+      Burnt.toast({
+        title: "Sucesso",
+        message: "Perfil atualizado com sucesso!",
+        preset: "done",
+      });
       setEditavel(false);
     } catch (error) {
-      Alert.alert("Erro", "Não foi possível atualizar o perfil.");
+      Burnt.toast({
+        title: "Erro",
+        message: "Não foi possível atualizar o perfil!",
+        preset: "error",
+      });
     }
   };
 
@@ -154,7 +173,7 @@ export default function PerfilScreen() {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.label}>Foto de Perfil</Text>
+        <Text style={styles.labelPerfil}>Foto de Perfil</Text>
         <TouchableOpacity onPress={selecionarImagem}>
           {perfil.fotoPerfil && perfil.fotoPerfil.trim() !== "" ? (
             <Image source={{ uri: perfil.fotoPerfil }} style={styles.fotoPerfil} />
@@ -259,6 +278,7 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 20,
+    alignItems: "center", 
   },
   centered: {
     flex: 1,
@@ -267,43 +287,60 @@ const styles = StyleSheet.create({
   },
   label: {
     fontWeight: "bold",
-    marginTop: 10,
+    fontSize: 18, 
+    alignSelf: "flex-start",
+    marginTop: 12,
+    color: "#333",
+  },
+  labelPerfil: {
+    fontWeight: "bold",
+    fontSize: 18, 
+    alignSelf: "center",
+    marginTop: 12,
+    color: "#333",
   },
   input: {
+    width: "100%",
+    fontSize: 16,
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 6,
-    padding: 10,
-    marginTop: 4,
-    backgroundColor: "#f5f5f5",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginTop: 6,
+    backgroundColor: "#fff",
+    elevation: 1,
   },
   botoesContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 8,
-    padding: 12,
+    gap: 10,
+    padding: 16,
     backgroundColor: "#FFFAEC",
   },
   botaoPrincipal: {
     flex: 1,
     backgroundColor: "#28A745",
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 12,
     marginHorizontal: 4,
+    elevation: 2,
   },
   botaoSecundario: {
     flex: 1,
     backgroundColor: "#4A6FA5",
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 12,
     marginHorizontal: 4,
+    elevation: 2,
   },
   botaoNovaSenha: {
     flex: 1,
-    backgroundColor: "red",
+    backgroundColor: "#DC3545",
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 12,
     marginHorizontal: 4,
+    elevation: 2,
   },
   botaoTexto: {
     color: "#fff",
@@ -312,16 +349,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   fotoPerfil: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginVertical: 10,
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    marginVertical: 12,
+    borderWidth: 2,
+    borderColor: "#ccc",
   },
   iconePerfil: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    marginVertical: 10,
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    marginVertical: 12,
     backgroundColor: "#e0e0e0",
     justifyContent: "center",
     alignItems: "center",
