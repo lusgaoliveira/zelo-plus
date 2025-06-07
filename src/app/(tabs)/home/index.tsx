@@ -17,6 +17,7 @@ import * as Burnt from "burnt";
 export default function HomeScreen() {
   const { dados } = useLocalSearchParams();
   const usuario = dados ? JSON.parse(dados as string) : null;
+  const id = usuario.tipoUsuario === "CUIDADOR" ? usuario.codigo : usuario.id;
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -39,7 +40,7 @@ export default function HomeScreen() {
 
     try {
       setCarregandoPagina(true);
-      const resposta = await Chamadas.buscarTarefas(usuario.id, paginaRef.current);
+      const resposta = await Chamadas.buscarTarefas(id, paginaRef.current);
       setTarefas((prev) => [...prev, ...resposta.content]);
       setTemMaisPaginas(!resposta.last);
       setPagina((prev) => prev + 1);
@@ -53,7 +54,7 @@ export default function HomeScreen() {
       setCarregandoPagina(false);
       setLoading(false);
     }
-  }, [usuario.id]);
+  }, [id]);
 
   useFocusEffect(
     useCallback(() => {
@@ -107,7 +108,7 @@ export default function HomeScreen() {
 
   const formatarData = (dataISO: string) => {
     const data = new Date(dataISO);
-    data.setMinutes(data.getMinutes() + data.getTimezoneOffset()); // Corrigir fuso
+    data.setMinutes(data.getMinutes() + data.getTimezoneOffset()); 
     return data.toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
@@ -119,7 +120,7 @@ export default function HomeScreen() {
     const agrupadas: { [data: string]: Tarefas[] } = {};
 
     tarefas.forEach((tarefa) => {
-      const dataFormatada = formatarData(tarefa.dataAgendamento);
+      const dataFormatada = new Date(tarefa.dataAgendamento).toLocaleDateString("pt-BR");
       if (!agrupadas[dataFormatada]) {
         agrupadas[dataFormatada] = [];
       }
@@ -153,7 +154,7 @@ export default function HomeScreen() {
       <View style={styles.topo}>
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={() => router.replace("/login")}>
-            <MaterialIcons name="logout" size={24} color="black" />
+            <Ionicons name="log-out-outline" size={42} color="red" />
           </TouchableOpacity>
         </View>
       </View>
@@ -213,6 +214,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFAEC",
   },
   headerContainer: {
+    paddingTop: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
