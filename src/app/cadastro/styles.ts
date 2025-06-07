@@ -1,30 +1,28 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    justifyContent: "center",
-    backgroundColor: "#FEF6E4",
-  },
+  
   logo: {
-    flex: 0.5,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingTop: 20
+    alignItems: "center",
+    marginTop: 40, 
+    marginBottom: 20, 
   },
-  conteudo: {
-    flex: 1,
-    justifyContent: 'flex-start',
+
+  scrollContent: {
+    padding: 20, 
+    flexGrow: 1,
+    backgroundColor:"#FEF6E4"
   },
+  formContainer: {
+    gap: 10,
+  },
+  
   subtitulo: {
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 24,
   },
-  formContainer: {
-    marginBottom: 22,
-  },
+ 
   inputGroup: {
     flexDirection: "row",
     alignItems: "center",
@@ -35,6 +33,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     marginBottom: 16,
   },
+  label: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    color: '#333',
+  },
+
   input: {
     flex: 1,
     height: 48,
@@ -45,7 +50,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: 'center',
-    height: 48, 
+    height: 47, 
     marginLeft: 8, 
   },
 
@@ -57,18 +62,64 @@ const styles = StyleSheet.create({
     margin: 10
   },
 
-  botao: {
-    backgroundColor: "#28A745",
+  botoesContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12, 
+    paddingHorizontal: 12,
+    marginTop: 16,
+  },
+
+  botaoPrincipal: {
+    flex: 1,
+    backgroundColor: '#28A745',
     paddingVertical: 14,
     borderRadius: 8,
-    marginBottom: 12,
+    marginRight: 6,
   },
+
+  botaoSecundario: {
+    flex: 1,
+    backgroundColor: '#4A6FA5',
+    paddingVertical: 14,
+    borderRadius: 8,
+    marginLeft: 6,
+  },
+
   botaoTexto: {
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
     fontSize: 18,
   },
+  
+  labelWithIcon: {
+    flexDirection: 'row',      
+    alignItems: 'center',      
+    marginBottom: 8,
+    marginLeft: 4,
+  },
+
+  labelText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+    marginLeft: 8,               
+    flexShrink: 1,               
+  },
+
+  checkboxItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginHorizontal: 12,
+  },
+
+  checkboxLabel: {
+    fontSize: 14,
+    color: "#444",
+    marginRight: 6,
+  },
+
 });
 
 export default styles;

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { TextInput, TouchableOpacity, View, Text, Alert } from "react-native";
+import { TextInput, TouchableOpacity, View, Text, Alert, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
 import Checkbox from "expo-checkbox";
 import Logo from "../../components/logo";
 import styles from "./styles";
@@ -16,7 +16,6 @@ export default function CadastroScreen() {
   const [codigoIdoso, setCodigoIdoso] = useState("");
   const [email, setEmail] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
-  const [fotoPerfil, setFotoPerfil] = useState("");
 
   const formatarData = (texto: string) => {
     const numeros = texto.replace(/\D/g, "");
@@ -43,7 +42,6 @@ export default function CadastroScreen() {
     nomeUsuario: usuario,
     senha: senha,
     email: email,
-    fotoPerfil: fotoPerfil || "",
     nome: nome,
     dataNascimento: dataNascimento,
     codigoVinculo: tipo === "CUIDADOR" ? codigoIdoso || null : null,
@@ -71,114 +69,129 @@ export default function CadastroScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.logo}>
-        <Logo />
-        <Text style={styles.subtitulo}>Criar nova conta</Text>
-      </View>
+   <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor:"#FEF6E4" }}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
+    >
 
-      <View style={styles.conteudo}>
-        <View style={styles.formContainer}>
-          <View style={styles.inputGroup}>
-            <Ionicons name="person-circle" size={20} color="#444" />
-            <TextInput
-              style={styles.input}
-              placeholder="Nome Completo"
-              value={nome}
-              onChangeText={setNome}
-            />
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.logo}>
+            <Logo />
+            <Text style={styles.subtitulo}>Criar nova conta</Text>
           </View>
-
-          <View style={styles.inputGroup}>
-            <Ionicons name="person" size={20} color="#444" />
-            <TextInput
-              style={styles.input}
-              placeholder="Nome de Usuário"
-              value={usuario}
-              onChangeText={setUsuario}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Ionicons name="lock-closed" size={20} color="#444" />
-            <TextInput
-              style={styles.input}
-              placeholder="Senha"
-              secureTextEntry={true}
-              value={senha}
-              onChangeText={setSenha}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Ionicons name="mail" size={20} color="#444" />
-            <TextInput
-              style={styles.input}
-              placeholder="E-mail"
-              keyboardType="email-address"
-              value={email}
-              onChangeText={setEmail}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Ionicons name="calendar-outline" size={20} color="#444" />
-            <TextInput
-              style={styles.input}
-              placeholder="Data de Nascimento (dd/mm/aaaa)"
-              keyboardType="numeric"
-              maxLength={10}
-              value={dataNascimento}
-              onChangeText={formatarData}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Ionicons name="image" size={20} color="#444" />
-            <TextInput
-              style={styles.input}
-              placeholder="URL da Foto de Perfil (opcional)"
-              value={fotoPerfil}
-              onChangeText={setFotoPerfil}
-            />
-          </View>
-
-          <View style={styles.inputGroup}>
-            <Ionicons name="accessibility-outline" size={20} color="#444" />
-            <View style={styles.containerCheckbox}>
-              <Text>Idoso</Text>
-              <Checkbox
-                style={styles.inputCheckbox}
-                value={tipo === "IDOSO"}
-                onValueChange={() => setTipo("IDOSO")}
-              />
-              <Text>Cuidador</Text>
-              <Checkbox
-                style={styles.inputCheckbox}
-                value={tipo === "CUIDADOR"}
-                onValueChange={() => setTipo("CUIDADOR")}
-              />
-            </View>
-          </View>
-
-          {tipo === "CUIDADOR" && (
+          <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
-              <Ionicons name="code-working" size={20} color="#444" />
+              <Ionicons name="person-circle" size={20} color="#444" />
               <TextInput
                 style={styles.input}
-                value={codigoIdoso}
-                onChangeText={setCodigoIdoso}
-                maxLength={8}
-                placeholder="Digite o código de vínculo do idoso assistido"
+                placeholder="Nome Completo"
+                value={nome}
+                onChangeText={setNome}
               />
             </View>
-          )}
-        </View>
 
-        <TouchableOpacity style={styles.botao} onPress={criarUsuario}>
-          <Text style={styles.botaoTexto}>Cadastrar</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+            <View style={styles.inputGroup}>
+              <Ionicons name="person" size={20} color="#444" />
+              <TextInput
+                style={styles.input}
+                placeholder="Nome de Usuário"
+                value={usuario}
+                onChangeText={setUsuario}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Ionicons name="lock-closed" size={20} color="#444" />
+              <TextInput
+                style={styles.input}
+                placeholder="Senha"
+                secureTextEntry={true}
+                value={senha}
+                onChangeText={setSenha}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Ionicons name="mail" size={20} color="#444" />
+              <TextInput
+                style={styles.input}
+                placeholder="E-mail"
+                keyboardType="email-address"
+                value={email}
+                onChangeText={setEmail}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Ionicons name="calendar-outline" size={20} color="#444" />
+              <TextInput
+                style={styles.input}
+                placeholder="Data de Nascimento (dd/mm/aaaa)"
+                keyboardType="numeric"
+                maxLength={10}
+                value={dataNascimento}
+                onChangeText={formatarData}
+              />
+            </View>
+
+            <View style={styles.labelWithIcon}>
+              <Ionicons name="accessibility-outline" size={20} color="#444" />
+              <Text style={styles.labelText}>Abaixo selecione o seu tipo de usuário</Text>
+            </View>
+          <View style={styles.inputGroup}>
+
+            <View style={styles.containerCheckbox}>
+              <View style={styles.checkboxItem}>
+                <Text style={styles.checkboxLabel}>Idoso</Text>
+                <Checkbox
+                  style={styles.inputCheckbox}
+                  value={tipo === "IDOSO"}
+                  onValueChange={() => setTipo("IDOSO")}
+                />
+              </View>
+
+              <View style={styles.checkboxItem}>
+                <Text style={styles.checkboxLabel}>Cuidador</Text>
+                <Checkbox
+                  style={styles.inputCheckbox}
+                  value={tipo === "CUIDADOR"}
+                  onValueChange={() => setTipo("CUIDADOR")}
+                />
+              </View>
+            </View>
+          </View>
+
+
+
+            {tipo === "CUIDADOR" && (
+              <View style={styles.inputGroup}>
+                <Ionicons name="code-working" size={20} color="#444" />
+                <TextInput
+                  style={styles.input}
+                  value={codigoIdoso}
+                  onChangeText={setCodigoIdoso}
+                  maxLength={8}
+                  placeholder="Digite o código de vínculo do idoso assistido"
+                />
+              </View>
+            )}
+          </View>
+
+          <View style={styles.botoesContainer}>
+          
+            <TouchableOpacity style={styles.botaoSecundario} onPress={()=>router.back()}>
+              <Text style={styles.botaoTexto}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.botaoPrincipal} onPress={criarUsuario}>
+              <Text style={styles.botaoTexto}>Cadastrar</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
