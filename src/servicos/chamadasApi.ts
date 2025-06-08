@@ -177,4 +177,13 @@ export class Chamadas {
     }
   }
   
+  static async atualizarSenha(id: number, senha: string) {
+    try {
+      const resposta = await instance.patch(`/usuarios/${id}`, senha);
+      return resposta.data;
+    } catch (error) {
+      pegarErros(error)
+      throw error;
+    }
+  }
 }
