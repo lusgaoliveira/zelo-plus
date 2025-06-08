@@ -160,4 +160,21 @@ export class Chamadas {
       throw error;
     }
   }
+
+  static async buscarTarefasPorCriterioEMes(id: number, criterio: String, mes: number) {
+
+    try {
+      const resposta = await instance.get(`/tarefas/${criterio}`, {
+        params: {
+          id: id,
+          mes: mes ?? "",
+        },
+      })
+      return resposta.data;
+    } catch (error) {
+      pegarErros(error)
+      throw error;
+    }
+  }
+  
 }
