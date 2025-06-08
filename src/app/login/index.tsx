@@ -14,6 +14,8 @@ import Logo from "../../components/logo"
 import { router } from 'expo-router';
 import { Chamadas } from '../../servicos/chamadasApi';
 import { Login } from '../../modelos/Login';
+import * as Burnt from "burnt";
+
 export default function LoginScreen() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
@@ -36,10 +38,18 @@ export default function LoginScreen() {
           },
         });
       } else {
-        Alert.alert('Erro', 'Usuário ou senha inválidos');
+        Burnt.toast({
+          title: "Eita, problema!",
+          message: "Usuário ou senha inválidos",
+          preset: "error",
+        });
       }
     } catch (error: any) {
-      Alert.alert('Erro', error.response?.data?.mensagem || 'Erro ao tentar fazer login');
+      Burnt.toast({
+        title: "Eita, problema!",
+        message: 'Erro ' + error.response?.data?.mensagem || 'Erro ao tentar fazer login',
+        preset: "error",
+      });
     }
   };
 
