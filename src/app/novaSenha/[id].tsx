@@ -4,39 +4,54 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet, 
-  Image,
+  StyleSheet,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Formik } from 'formik';
-import RecuperacaoSchema from '../../utils/validadores/recuperacaoSenha';
 import { router, useLocalSearchParams } from 'expo-router';
-import Logo from "../../components/logo"
+import Logo from "../../components/logo";
+import * as Burnt from "burnt";
+import { Chamadas } from '../../servicos/chamadasApi';
+import RecuperacaoSchema from '../../utils/validadores/recuperacaoSenha';
 
 export default function NovaSenhaScreen() {
+  const { dados } = useLocalSearchParams();
+  const usuario = dados ? JSON.parse(dados as string) : null;
+  const id = usuario.id;
 
-  const { id } = useLocalSearchParams();
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfSenha, setMostrarConfSenha] = useState(false);
 
   const senhaRef = useRef<TextInput>(null);
   const confirmarNovaSenhaRef = useRef<TextInput>(null);
 
-  const recuperacaoSenha = (value: {senha : string} ) => {
-    console.log('Usuário:', value.senha);
+  const atualizarSenha = async (values: { senha: string; confSenha: string }) => {
+    try {
+      const resposta = await Chamadas.atualizarSenha(id, values.senha);
+      if (resposta) {
+        router.back();
+      }
+    } catch (error: any) {
+      Burnt.toast({
+        title: "Eita, problema!",
+        message: "Erro desconhecido",
+        preset: "error",
+      });
+      console.error(error.response?.data?.mensagem || error.message || "Erro desconhecido");
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.logo}>
-        <Logo/>
+        <Logo />
         <Text style={styles.subtitulo}>Crie uma senha</Text>
       </View>
       <View style={styles.conteudo}>
         <Formik
-          initialValues={{senha: ""}}
+          initialValues={{ senha: "", confSenha: "" }}
           validationSchema={RecuperacaoSchema}
-          onSubmit={recuperacaoSenha}
+          onSubmit={atualizarSenha}
         >
           {({
             handleChange,
@@ -50,6 +65,7 @@ export default function NovaSenhaScreen() {
               <View style={styles.inputContainer}>
                 <Ionicons name="lock-closed" size={20} color="#444" />
                 <TextInput
+                  ref={senhaRef}
                   style={styles.input}
                   placeholder="Senha"
                   secureTextEntry={!mostrarSenha}
@@ -68,16 +84,17 @@ export default function NovaSenhaScreen() {
               {touched.senha && errors.senha && (
                 <Text style={styles.erro}>{errors.senha}</Text>
               )}
-            
+
               <View style={styles.inputContainer}>
                 <Ionicons name="lock-closed" size={20} color="#444" />
                 <TextInput
+                  ref={confirmarNovaSenhaRef}
                   style={styles.input}
                   placeholder="Confirmar Senha"
                   secureTextEntry={!mostrarConfSenha}
                   onChangeText={handleChange('confSenha')}
                   onBlur={handleBlur('confSenha')}
-
+                  value={values.confSenha}
                 />
                 <TouchableOpacity onPress={() => setMostrarConfSenha(!mostrarConfSenha)}>
                   <Ionicons
@@ -87,20 +104,18 @@ export default function NovaSenhaScreen() {
                   />
                 </TouchableOpacity>
               </View>
-              {touched.senha && errors.senha && (
-                <Text style={styles.erro}>{errors.senha}</Text>
+              {touched.confSenha && errors.confSenha && (
+                <Text style={styles.erro}>{errors.confSenha}</Text>
               )}
-              <View style={styles.botoesContainer}>
 
-                <TouchableOpacity style={styles.botaoSecundario} onPress={() =>router.back()}>
+              <View style={styles.botoesContainer}>
+                <TouchableOpacity style={styles.botaoSecundario} onPress={() => router.back()}>
                   <Text style={styles.botaoTexto}>Cancelar</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.botaoPrincipal} >
+                <TouchableOpacity style={styles.botaoPrincipal} onPress={() => atualizarSenha}>
                   <Text style={styles.botaoTexto}>Salvar</Text>
                 </TouchableOpacity>
-
-                
               </View>
             </>
           )}
@@ -109,6 +124,7 @@ export default function NovaSenhaScreen() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -120,7 +136,7 @@ const styles = StyleSheet.create({
     flex: 0.5,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingTop: 20
+    paddingTop: 20,
   },
   conteudo: {
     flex: 1,
@@ -146,39 +162,18 @@ const styles = StyleSheet.create({
     height: 48,
     marginLeft: 8,
   },
-  containerBotoes: {
-    flexDirection: "row"
-  },
-  botao: {
-    backgroundColor: '#28A745',
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  botaoTexto: {
-    color: '#fff',
-    textAlign: 'center',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  link: {
-    color: '#007BFF',
-    textAlign: 'center',
+  erro: {
+    color: 'red',
+    fontSize: 12,
     marginBottom: 8,
-  },
-  linkSecundario: {
-    color: '#555',
-    textAlign: 'center',
-    marginTop: 16,
   },
   botoesContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12, 
+    gap: 12,
     paddingHorizontal: 12,
     marginTop: 16,
   },
-
   botaoPrincipal: {
     flex: 1,
     backgroundColor: '#28A745',
@@ -186,7 +181,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 6,
   },
-
   botaoSecundario: {
     flex: 1,
     backgroundColor: '#4A6FA5',
@@ -194,10 +188,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginLeft: 6,
   },
-
-  erro: {
-    color: 'red',
-    fontSize: 12,
-    marginBottom: 8,
-  }
+  botaoTexto: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 });
