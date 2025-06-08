@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { TextInput, TouchableOpacity, View, Text, Alert, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
+import { TextInput, TouchableOpacity, View, Text, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
 import Checkbox from "expo-checkbox";
 import Logo from "../../components/logo";
 import styles from "./styles";
@@ -8,6 +8,35 @@ import { CriarUsuario } from "../../modelos/CriarUsuario";
 import { Chamadas } from "../../servicos/chamadasApi";
 import { router } from "expo-router";
 import * as Burnt from "burnt";
+import * as Notifications from 'expo-notifications';
+
+async function registerForPushNotificationsAsync() {
+  let token;
+
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+
+  if (finalStatus !== 'granted') {
+    alert('Permissão para notificações foi negada!');
+    return;
+  }
+
+  token = (await Notifications.getExpoPushTokenAsync()).data;
+
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+    });
+  }
+
+  return token;
+}
 
 export default function CadastroScreen() {
   const [nome, setNome] = useState("");
@@ -17,6 +46,16 @@ export default function CadastroScreen() {
   const [codigoIdoso, setCodigoIdoso] = useState("");
   const [email, setEmail] = useState("");
   const [dataNascimento, setDataNascimento] = useState("");
+  const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token => {
+      if (token) {
+        setExpoPushToken(token);
+        console.log('Expo Push Token:', token);
+      }
+    });
+  }, []);
 
   const formatarData = (texto: string) => {
     const numeros = texto.replace(/\D/g, "");
@@ -34,46 +73,55 @@ export default function CadastroScreen() {
   };
 
   const criarUsuario = async () => {
-    if (!usuario || !senha || !email || !nome || !dataNascimento) {
-      Burnt.toast({
-        title: "Eita, problema!",
-        message: "Preencha todos os campos obrigatórios",
-        preset: "error",
-      });
-      return;
-    }
+  if (!usuario || !senha || !email || !nome || !dataNascimento || !tipo) {
+    Burnt.toast({
+      title: "Eita, problema!",
+      message: "Preencha todos os campos obrigatórios",
+      preset: "error",
+    });
+    return;
+  }
 
-   const novoUsuario: CriarUsuario = {
+  if (!expoPushToken) {
+    Burnt.toast({
+      title: "Erro no Token",
+      message: "Não foi possível obter o token de notificações. Verifique as permissões.",
+      preset: "error",
+    });
+    return;
+  }
+
+  const novoUsuario: CriarUsuario = {
     nomeUsuario: usuario,
     senha: senha,
     email: email,
     nome: nome,
     dataNascimento: dataNascimento,
     codigoVinculo: tipo === "CUIDADOR" ? codigoIdoso || null : null,
-    tipoUsuario: (tipo === "CUIDADOR" && codigoIdoso) ? "CUIDADOR" : "IDOSO",
+    tipoUsuario: tipo === "CUIDADOR" && codigoIdoso ? "CUIDADOR" : "IDOSO",
+    tokenExpo: expoPushToken
   };
 
+  try {
+    const resposta = await Chamadas.criarUsuario(novoUsuario);
 
-    try {
-      const resposta = await Chamadas.criarUsuario(novoUsuario);
-
-      if (resposta) {
-        router.push({
-          pathname: '/home',
-          params: {
-            dados: JSON.stringify(resposta),
-          },
-        });
-      }
-    } catch (error: any) {
-        Burnt.toast({
-          title: "Eita, problema!",
-          message: "Erro desconhecido",
-          preset: "error",
-        });
-        console.error(error.response?.data?.mensagem || error.message || "Erro desconhecido")
+    if (resposta) {
+      router.push({
+        pathname: '/home',
+        params: {
+          dados: JSON.stringify(resposta),
+        },
+      });
     }
-  };
+  } catch (error: any) {
+    Burnt.toast({
+      title: "Eita, problema!",
+      message: "Erro desconhecido",
+      preset: "error",
+    });
+    console.error(error.response?.data?.mensagem || error.message || "Erro desconhecido");
+  }
+};
 
   return (
    <KeyboardAvoidingView
