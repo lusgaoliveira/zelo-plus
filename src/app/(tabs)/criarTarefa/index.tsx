@@ -43,7 +43,11 @@ export default function CriarTarefaScreen() {
         const dados = await Chamadas.listarTiposTarefa();
         setTipos(dados || []);
       } catch (error) {
-        Alert.alert("Erro", "Não foi possível carregar os tipos de tarefa.");
+         Burnt.toast({
+          title: "Eita, problema!",
+          message: "Verifque os campos",
+          preset: "error",
+        });
       } finally {
         setCarregando(false);
       }
