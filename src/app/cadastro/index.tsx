@@ -7,6 +7,7 @@ import styles from "./styles";
 import { CriarUsuario } from "../../modelos/CriarUsuario";
 import { Chamadas } from "../../servicos/chamadasApi";
 import { router } from "expo-router";
+import * as Burnt from "burnt";
 
 export default function CadastroScreen() {
   const [nome, setNome] = useState("");
@@ -34,7 +35,11 @@ export default function CadastroScreen() {
 
   const criarUsuario = async () => {
     if (!usuario || !senha || !email || !nome || !dataNascimento) {
-      Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
+      Burnt.toast({
+        title: "Eita, problema!",
+        message: "Preencha todos os campos obrigatórios",
+        preset: "error",
+      });
       return;
     }
 
@@ -61,10 +66,12 @@ export default function CadastroScreen() {
         });
       }
     } catch (error: any) {
-      Alert.alert(
-        "Erro ao criar usuário",
-        error.response?.data?.mensagem || error.message || "Erro desconhecido"
-      );
+        Burnt.toast({
+          title: "Eita, problema!",
+          message: "Erro desconhecido",
+          preset: "error",
+        });
+        console.error(error.response?.data?.mensagem || error.message || "Erro desconhecido")
     }
   };
 
