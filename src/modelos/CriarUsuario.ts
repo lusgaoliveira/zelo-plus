@@ -6,4 +6,5 @@ export interface CriarUsuario {
   tipoUsuario: string;
   dataNascimento: string; 
   codigoVinculo: string | null;
+  tokenExpo: string;
 }
