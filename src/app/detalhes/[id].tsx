@@ -49,7 +49,7 @@ export default function DetalhesScreen() {
 
   const excluirTarefa = async (idTarefa: number) => {
     try {
-      await Chamadas.excluirTarefa(idTarefa); // você precisa ter essa função em Chamadas
+      await Chamadas.excluirTarefa(idTarefa);
       Burnt.toast({
         title: "Excluído",
         message: "Tarefa excluída com sucesso",
@@ -117,7 +117,7 @@ export default function DetalhesScreen() {
   if (!tarefa || !tarefa.id) {
     return (
       <View style={styles.centered}>
-        <Text>Tarefa não encontrada</Text>
+        <Text style={{ fontSize: 18 }}>Tarefa não encontrada</Text>
       </View>
     );
   }
@@ -138,7 +138,7 @@ export default function DetalhesScreen() {
 
         <Text style={styles.label}>Descrição</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, { height: 100 }]}
           value={tarefa.descricao}
           multiline
           editable={editavel}
@@ -281,9 +281,9 @@ export default function DetalhesScreen() {
         />
       </ScrollView>
 
-      
       <View style={styles.botoesContainer}>
         <TouchableOpacity
+          accessibilityLabel="Voltar para a tela anterior"
           style={styles.botaoSecundario}
           onPress={() => router.back()}
         >
@@ -291,6 +291,7 @@ export default function DetalhesScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          accessibilityLabel="Editar ou cancelar edição"
           style={styles.botaoPrincipal}
           onPress={() => setEditavel(!editavel)}
         >
@@ -300,6 +301,7 @@ export default function DetalhesScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          accessibilityLabel="Salvar ou concluir tarefa"
           style={styles.botaoFinalizar}
           onPress={() => (editavel ? salvarTarefa() : concluirTarefa(tarefa.id))}
         >
@@ -309,6 +311,7 @@ export default function DetalhesScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity
+          accessibilityLabel="Excluir tarefa"
           style={styles.botaoExcluir}
           onPress={() => {
             Alert.alert(
@@ -324,7 +327,6 @@ export default function DetalhesScreen() {
           <Text style={styles.botaoTexto}>Excluir</Text>
         </TouchableOpacity>
       </View>
-
     </KeyboardAvoidingView>
   );
 }
@@ -335,25 +337,24 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFAEC",
   },
   container: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  centered: {
-    flex: 1,
+    flexGrow: 1,
     justifyContent: "center",
-    alignItems: "center",
+    padding: 24,
+    backgroundColor: "#FFFAEC",
   },
   label: {
     fontWeight: "bold",
-    marginTop: 10,
+    marginTop: 16,
+    fontSize: 18,
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 6,
-    padding: 10,
-    marginTop: 4,
+    padding: 14,
+    marginTop: 6,
     backgroundColor: "#f5f5f5",
+    fontSize: 16,
   },
   inputDesabilitado: {
     backgroundColor: "#e0e0e0",
@@ -361,52 +362,64 @@ const styles = StyleSheet.create({
   inlineGroup: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 8,
-    marginBottom: 10,
+    gap: 12,
+    marginBottom: 16,
   },
   metade: {
     flex: 1,
   },
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 6,
+    marginTop: 6,
+    backgroundColor: "#f5f5f5",
+    paddingHorizontal: 10,
+  },
+  picker: {
+    fontSize: 16,
+  },
   botoesContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    gap: 8,
-    padding: 12,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
     backgroundColor: "#FFFAEC",
-    marginBottom: 10,
+    gap: 8,
   },
   botaoPrincipal: {
     flex: 1,
     backgroundColor: "#28A745",
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginHorizontal: 4,
+    paddingVertical: 16,
+    borderRadius: 10,
   },
   botaoSecundario: {
     flex: 1,
     backgroundColor: "#4A6FA5",
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginHorizontal: 4,
+    paddingVertical: 16,
+    borderRadius: 10,
   },
   botaoFinalizar: {
     flex: 1,
     backgroundColor: "#ff4d4d",
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginHorizontal: 4,
+    paddingVertical: 16,
+    borderRadius: 10,
   },
   botaoExcluir: {
     flex: 1,
-    backgroundColor: "#6c757d", 
-    paddingVertical: 14,
-    borderRadius: 8,
-    marginHorizontal: 4,
+    backgroundColor: "#6c757d",
+    paddingVertical: 16,
+    borderRadius: 10,
   },
   botaoTexto: {
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 18,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
