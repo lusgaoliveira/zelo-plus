@@ -19,10 +19,13 @@ export default function TabLayout() {
           paddingTop: 25, 
           paddingBottom: 25, 
           elevation: 0,
+          justifyContent: tipoUsuario === "IDOSO" ? 'flex-start' : 'space-around',
         },
         tabBarItemStyle: {
           justifyContent: "center",
           alignItems: "center",
+          width: tipoUsuario === "IDOSO" ? 100 : 'auto', // limita largura do botão
+          marginRight: tipoUsuario === "IDOSO" ? 20 : 0, // cria espaçamento
         },
         tabBarLabelStyle: {
           fontSize: 12,
