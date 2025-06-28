@@ -38,14 +38,14 @@ export default function LoginScreen() {
           },
         });
       } else {
-        Burnt.toast({
+        Burnt.alert({
           title: "Eita, problema!",
           message: "Usuário ou senha inválidos",
           preset: "error",
         });
       }
     } catch (error: any) {
-      Burnt.toast({
+      Burnt.alert({
         title: "Eita, problema!",
         message: 'Erro ' + error.response?.data?.mensagem || 'Erro ao tentar fazer login',
         preset: "error",
