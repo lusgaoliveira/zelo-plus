@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Ionicons } from "@expo/vector-icons";
-import { TextInput, TouchableOpacity, View, Text, ScrollView, KeyboardAvoidingView, Platform} from "react-native";
+import {
+  TextInput,
+  TouchableOpacity,
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import Checkbox from "expo-checkbox";
-import Logo from "../../components/logo";
-import styles from "./styles";
+import { Ionicons } from "@expo/vector-icons";
+import { Formik } from "formik";
+import * as Burnt from "burnt";
+import * as Notifications from "expo-notifications";
+import CriarUsuarioSchema from "../../utils/validadores/criarUsuario";
 import { CriarUsuario } from "../../modelos/CriarUsuario";
 import { Chamadas } from "../../servicos/chamadasApi";
+import Logo from "../../components/logo";
+import styles from "./styles";
 import { router } from "expo-router";
-import * as Burnt from "burnt";
-import * as Notifications from 'expo-notifications';
 
 async function registerForPushNotificationsAsync() {
   let token;
@@ -39,214 +49,240 @@ async function registerForPushNotificationsAsync() {
 }
 
 export default function CadastroScreen() {
-  const [nome, setNome] = useState("");
-  const [usuario, setUsuario] = useState("");
-  const [senha, setSenha] = useState("");
-  const [tipo, setTipo] = useState<"IDOSO" | "CUIDADOR" | null>(null);
-  const [codigoIdoso, setCodigoIdoso] = useState("");
-  const [email, setEmail] = useState("");
-  const [dataNascimento, setDataNascimento] = useState("");
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then(token => {
-      if (token) {
-        setExpoPushToken(token);
-        console.log('Expo Push Token:', token);
-      }
-    });
+    registerForPushNotificationsAsync().then(setExpoPushToken);
   }, []);
 
-  const formatarData = (texto: string) => {
+  const formatarData = (texto: string, setFieldValue: any) => {
     const numeros = texto.replace(/\D/g, "");
     let resultado = "";
     if (numeros.length <= 2) {
       resultado = numeros;
     } else if (numeros.length <= 4) {
       resultado = `${numeros.slice(0, 2)}/${numeros.slice(2)}`;
-    } else if (numeros.length <= 8) {
-      resultado = `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4)}`;
     } else {
       resultado = `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4, 8)}`;
     }
-    setDataNascimento(resultado);
+    setFieldValue("dataNascimento", resultado);
   };
 
-  const criarUsuario = async () => {
-  if (!usuario || !senha || !email || !nome || !dataNascimento || !tipo) {
-    Burnt.toast({
-      title: "Eita, problema!",
-      message: "Preencha todos os campos obrigatórios",
-      preset: "error",
-    });
-    return;
-  }
-
-  if (!expoPushToken) {
-    Burnt.toast({
-      title: "Erro no Token",
-      message: "Não foi possível obter o token de notificações. Verifique as permissões.",
-      preset: "error",
-    });
-    return;
-  }
-
-  const novoUsuario: CriarUsuario = {
-    nomeUsuario: usuario,
-    senha: senha,
-    email: email,
-    nome: nome,
-    dataNascimento: dataNascimento,
-    codigoVinculo: tipo === "CUIDADOR" ? codigoIdoso || null : null,
-    tipoUsuario: tipo === "CUIDADOR" && codigoIdoso ? "CUIDADOR" : "IDOSO",
-    tokenExpo: expoPushToken
-  };
-
-  try {
-    const resposta = await Chamadas.criarUsuario(novoUsuario);
-
-    if (resposta) {
-      router.push({
-        pathname: '/home',
-        params: {
-          dados: JSON.stringify(resposta),
-        },
+  const criarUsuario = async (values: any) => {
+    if (!expoPushToken) {
+      Burnt.toast({
+        title: "Erro no Token",
+        message: "Não foi possível obter o token de notificações.",
+        preset: "error",
       });
+      return;
     }
-  } catch (error: any) {
-    Burnt.toast({
-      title: "Eita, problema!",
-      message: "Erro desconhecido",
-      preset: "error",
-    });
-    console.error(error.response?.data?.mensagem || error.message || "Erro desconhecido");
-  }
-};
+
+    const novoUsuario: CriarUsuario = {
+      nome: values.nome,
+      nomeUsuario: values.nomeUsuario,
+      senha: values.senha,
+      email: values.email,
+      dataNascimento: values.dataNascimento,
+      tipoUsuario: values.tipoUsuario,
+      codigoVinculo: values.tipoUsuario === "CUIDADOR" ? values.codigoVinculo : null,
+      tokenExpo: expoPushToken,
+    };
+
+    try {
+      const resposta = await Chamadas.criarUsuario(novoUsuario);
+
+      if (resposta) {
+        router.push({
+          pathname: "/home",
+          params: { dados: JSON.stringify(resposta) },
+        });
+      }
+    } catch (error: any) {
+      Burnt.toast({
+        title: "Erro!",
+        message: error.response?.data?.mensagem || "Erro desconhecido",
+        preset: "error",
+      });
+      console.error(error);
+    }
+  };
 
   return (
-   <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor:"#FEF6E4" }}
+    <KeyboardAvoidingView
+      style={{ flex: 1, backgroundColor: "#FEF6E4" }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.logo}>
+          <Logo />
+          <Text style={styles.subtitulo}>Criar nova conta</Text>
+        </View>
 
-        <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+        <Formik
+          initialValues={{
+            nome: "",
+            nomeUsuario: "",
+            senha: "",
+            email: "",
+            dataNascimento: "",
+            tipoUsuario: "",
+            codigoVinculo: "",
+          }}
+          validationSchema={CriarUsuarioSchema}
+          onSubmit={criarUsuario}
         >
-          <View style={styles.logo}>
-            <Logo />
-            <Text style={styles.subtitulo}>Criar nova conta</Text>
-          </View>
-          <View style={styles.formContainer}>
-            <View style={styles.inputGroup}>
-              <Ionicons name="person-circle" size={20} color="#444" />
-              <TextInput
-                style={styles.input}
-                placeholder="Nome Completo"
-                value={nome}
-                onChangeText={setNome}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Ionicons name="person" size={20} color="#444" />
-              <TextInput
-                style={styles.input}
-                placeholder="Nome de Usuário"
-                value={usuario}
-                onChangeText={setUsuario}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Ionicons name="lock-closed" size={20} color="#444" />
-              <TextInput
-                style={styles.input}
-                placeholder="Senha"
-                secureTextEntry={true}
-                value={senha}
-                onChangeText={setSenha}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Ionicons name="mail" size={20} color="#444" />
-              <TextInput
-                style={styles.input}
-                placeholder="E-mail"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Ionicons name="calendar-outline" size={20} color="#444" />
-              <TextInput
-                style={styles.input}
-                placeholder="Data de Nascimento (dd/mm/aaaa)"
-                keyboardType="numeric"
-                maxLength={10}
-                value={dataNascimento}
-                onChangeText={formatarData}
-              />
-            </View>
-
-            <View style={styles.labelWithIcon}>
-              <Ionicons name="accessibility-outline" size={20} color="#444" />
-              <Text style={styles.labelText}>Abaixo selecione o seu tipo de usuário</Text>
-            </View>
-          <View style={styles.inputGroup}>
-
-            <View style={styles.containerCheckbox}>
-              <View style={styles.checkboxItem}>
-                <Text style={styles.checkboxLabel}>Idoso</Text>
-                <Checkbox
-                  style={styles.inputCheckbox}
-                  value={tipo === "IDOSO"}
-                  onValueChange={() => setTipo("IDOSO")}
-                />
-              </View>
-
-              <View style={styles.checkboxItem}>
-                <Text style={styles.checkboxLabel}>Cuidador</Text>
-                <Checkbox
-                  style={styles.inputCheckbox}
-                  value={tipo === "CUIDADOR"}
-                  onValueChange={() => setTipo("CUIDADOR")}
-                />
-              </View>
-            </View>
-          </View>
-
-
-
-            {tipo === "CUIDADOR" && (
+          {({
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            setFieldValue,
+            values,
+            errors,
+            touched,
+          }) => (
+            <View style={styles.formContainer}>
+              {/* Nome */}
               <View style={styles.inputGroup}>
-                <Ionicons name="code-working" size={20} color="#444" />
+                <Ionicons name="person-circle" size={20} color="#444" />
                 <TextInput
                   style={styles.input}
-                  value={codigoIdoso}
-                  onChangeText={setCodigoIdoso}
-                  maxLength={8}
-                  placeholder="Digite o código de vínculo do idoso assistido"
+                  placeholder="Nome Completo"
+                  value={values.nome}
+                  onChangeText={handleChange("nome")}
+                  onBlur={handleBlur("nome")}
                 />
               </View>
-            )}
-          </View>
+              {touched.nome && errors.nome && <Text style={styles.erro}>{errors.nome}</Text>}
 
-          <View style={styles.botoesContainer}>
-          
-            <TouchableOpacity style={styles.botaoSecundario} onPress={()=>router.back()}>
-              <Text style={styles.botaoTexto}>Cancelar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.botaoPrincipal} onPress={criarUsuario}>
-              <Text style={styles.botaoTexto}>Cadastrar</Text>
-            </TouchableOpacity>
-          </View>
-        </ScrollView>
+              {/* Nome de usuário */}
+              <View style={styles.inputGroup}>
+                <Ionicons name="person" size={20} color="#444" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nome de Usuário"
+                  value={values.nomeUsuario}
+                  onChangeText={handleChange("nomeUsuario")}
+                  onBlur={handleBlur("nomeUsuario")}
+                />
+              </View>
+              {touched.nomeUsuario && errors.nomeUsuario && (
+                <Text style={styles.erro}>{errors.nomeUsuario}</Text>
+              )}
+
+              {/* Senha */}
+              <View style={styles.inputGroup}>
+                <Ionicons name="lock-closed" size={20} color="#444" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Senha"
+                  secureTextEntry
+                  value={values.senha}
+                  onChangeText={handleChange("senha")}
+                  onBlur={handleBlur("senha")}
+                />
+              </View>
+              {touched.senha && errors.senha && <Text style={styles.erro}>{errors.senha}</Text>}
+
+              {/* Email */}
+              <View style={styles.inputGroup}>
+                <Ionicons name="mail" size={20} color="#444" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="E-mail"
+                  keyboardType="email-address"
+                  value={values.email}
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                />
+              </View>
+              {touched.email && errors.email && <Text style={styles.erro}>{errors.email}</Text>}
+
+              {/* Data de nascimento */}
+              <View style={styles.inputGroup}>
+                <Ionicons name="calendar-outline" size={20} color="#444" />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Data de Nascimento (dd/mm/aaaa)"
+                  keyboardType="numeric"
+                  maxLength={10}
+                  value={values.dataNascimento}
+                  onChangeText={(text) => formatarData(text, setFieldValue)}
+                  onBlur={handleBlur("dataNascimento")}
+                />
+              </View>
+              {touched.dataNascimento && errors.dataNascimento && (
+                <Text style={styles.erro}>{errors.dataNascimento}</Text>
+              )}
+
+              {/* Tipo de usuário */}
+              <View style={styles.labelWithIcon}>
+                <Ionicons name="accessibility-outline" size={20} color="#444" />
+                <Text style={styles.labelText}>Abaixo selecione o seu tipo de usuário</Text>
+              </View>
+              <View style={styles.inputGroup}>
+                <View style={styles.containerCheckbox}>
+                  <View style={styles.checkboxItem}>
+                    <Text style={styles.checkboxLabel}>Idoso</Text>
+                    <Checkbox
+                      style={styles.inputCheckbox}
+                      value={values.tipoUsuario === "IDOSO"}
+                      onValueChange={() => setFieldValue("tipoUsuario", "IDOSO")}
+                    />
+                  </View>
+
+                  <View style={styles.checkboxItem}>
+                    <Text style={styles.checkboxLabel}>Cuidador</Text>
+                    <Checkbox
+                      style={styles.inputCheckbox}
+                      value={values.tipoUsuario === "CUIDADOR"}
+                      onValueChange={() => setFieldValue("tipoUsuario", "CUIDADOR")}
+                    />
+                  </View>
+                </View>
+              </View>
+              {touched.tipoUsuario && errors.tipoUsuario && (
+                <Text style={styles.erro}>{errors.tipoUsuario}</Text>
+              )}
+
+              {/* Código do idoso (se cuidador) */}
+              {values.tipoUsuario === "CUIDADOR" && (
+                <View style={styles.inputGroup}>
+                  <Ionicons name="code-working" size={20} color="#444" />
+                  <TextInput
+                    style={styles.input}
+                    value={values.codigoVinculo}
+                    onChangeText={handleChange("codigoVinculo")}
+                    onBlur={handleBlur("codigoVinculo")}
+                    maxLength={8}
+                    placeholder="Código de vínculo do idoso"
+                  />
+                </View>
+              )}
+              {values.tipoUsuario === "CUIDADOR" &&
+                touched.codigoVinculo &&
+                errors.codigoVinculo && (
+                  <Text style={styles.erro}>{errors.codigoVinculo}</Text>
+                )}
+
+              {/* Botões */}
+              <View style={styles.botoesContainer}>
+                <TouchableOpacity style={styles.botaoSecundario} onPress={() => router.back()}>
+                  <Text style={styles.botaoTexto}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.botaoPrincipal} onPress={handleSubmit as any}>
+                  <Text style={styles.botaoTexto}>Cadastrar</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
+        </Formik>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }

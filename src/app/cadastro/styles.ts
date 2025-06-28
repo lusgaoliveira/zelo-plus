@@ -119,7 +119,11 @@ const styles = StyleSheet.create({
     color: "#444",
     marginRight: 6,
   },
-
+  erro: {
+    color: '#007BFF',
+    fontSize: 12,
+    marginBottom: 8,
+}
 });
 
 export default styles;
