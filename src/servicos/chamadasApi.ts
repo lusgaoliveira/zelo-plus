@@ -31,7 +31,6 @@ export class Chamadas {
         const payload = {
             ...dados
         }
-        console.log(payload)
         const resposta = await instance.post("/login", payload);
         return resposta.data;
     } catch (error) {
@@ -84,7 +83,6 @@ export class Chamadas {
 
   static async criarTarefa(dados: any): Promise<void> {
     try {
-      console.log(dados)
       await instance.post("/tarefas/criar", dados);
     } catch (error) {
       pegarErros(error);
@@ -178,8 +176,19 @@ export class Chamadas {
   }
   
   static async atualizarSenha(id: number, senha: string) {
+    
     try {
-      const resposta = await instance.patch(`/usuarios/${id}`, senha);
+      const resposta = await instance.patch(`/usuarios/atualizar-senha/${id}`, { senha });
+      return resposta.data;
+    } catch (error) {
+      pegarErros(error);
+      throw error;
+    }
+  }
+
+  static async recuperarSenha(email: string) {
+    try {
+      const resposta = await instance.patch(`/usuarios/recuperar-senha`, email);
       return resposta.data;
     } catch (error) {
       pegarErros(error)
