@@ -4,7 +4,6 @@ import { Login } from "../modelos/Login";
 import { Perfil } from "../modelos/Perfil";
 import { Tarefa, TipoTarefa } from "../modelos/Tarefa";
 
-import * as FileSystem from "expo-file-system";
 
 const pegarErros = (error: any): never => {
   if (error.response) {
