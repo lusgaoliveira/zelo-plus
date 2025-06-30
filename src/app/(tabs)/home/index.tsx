@@ -106,16 +106,6 @@ export default function HomeScreen() {
     </TouchableOpacity>
   );
 
-  const formatarData = (dataISO: string) => {
-    const data = new Date(dataISO);
-    data.setMinutes(data.getMinutes() + data.getTimezoneOffset()); 
-    return data.toLocaleDateString("pt-BR", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
-  };
-
   const agruparPorData = (tarefas: Tarefas[]) => {
     const agrupadas: { [data: string]: Tarefas[] } = {};
 
@@ -155,11 +145,19 @@ export default function HomeScreen() {
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={() => router.replace("/login")}>
             <Ionicons name="log-out-outline" size={42} color="red" />
+            <Text style={styles.headerTexto}>SAIR</Text>
           </TouchableOpacity>
         </View>
       </View>
-      
-    
+
+      <View style={styles.boasVindasContainer}>
+        <Text style={styles.boasVindasTexto}>
+          {usuario.tipoUsuario === "IDOSO"
+            ? `Bom dia, ${usuario.nome}! Suas tarefas estão abaixo.`
+            : `Bom dia, ${usuario.nome} cuidador! As tarefas estão abaixo.`}
+        </Text>
+      </View>
+
       <View style={styles.listaContainer}>
         <FlatList
           data={agruparPorData(tarefas)}
@@ -210,18 +208,36 @@ const styles = StyleSheet.create({
   },
   topo: {
     flex: 0.5,
-    padding: 16,
+    padding: 10,
     backgroundColor: "#FFFAEC",
   },
   headerContainer: {
-    paddingTop: 12,
+    paddingTop: 28,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
+  headerTexto: {
+    color: "red",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
   titulo: {
     fontSize: 22,
     fontWeight: "bold",
+  },
+  boasVindasContainer: {
+    padding: 24, 
+    backgroundColor: "#FFF3CD",
+    borderRadius: 12,
+    marginHorizontal: 16, 
+    marginBottom: 16, 
+  },
+  boasVindasTexto: {
+    fontSize: 20, 
+    fontWeight: "600",
+    color: "#856404",
+    textAlign: "center",
   },
   listaContainer: {
     flex: 1,
