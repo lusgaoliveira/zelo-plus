@@ -69,7 +69,20 @@ export default function DetalhesScreen() {
   const salvarTarefa = async () => {
     try {
       if (!tarefa) return;
-      await Chamadas.atualizarTarefa(tarefa.id, tarefa);
+
+      // Cria uma cópia da tarefa para edição
+      const tarefaParaEnviar: any = { ...tarefa };
+
+      // Se tiver `tipoTarefa`, converte para `tipo`
+      if (tarefa.tipoTarefa && tarefa.tipoTarefa.id) {
+        tarefaParaEnviar.tipo = tarefa.tipoTarefa;
+      }
+
+      // Remove o campo que o backend não espera
+      delete tarefaParaEnviar.tipoTarefa;
+
+      await Chamadas.atualizarTarefa(tarefa.id, tarefaParaEnviar);
+
       Burnt.toast({
         title: "Tudo Certo",
         message: "Tarefa atualizada com sucesso",
