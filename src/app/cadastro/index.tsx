@@ -20,8 +20,8 @@ import Logo from "../../components/logo";
 import styles from "./styles";
 import { router } from "expo-router";
 
-async function registerForPushNotificationsAsync() {
-  let token;
+async function registerForPushNotificationsAsync(): Promise<string | null> {
+  let token: string | null = null;
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
@@ -33,13 +33,13 @@ async function registerForPushNotificationsAsync() {
 
   if (finalStatus !== 'granted') {
     alert('Permissão para notificações foi negada!');
-    return;
+    return null;
   }
 
   token = (await Notifications.getExpoPushTokenAsync()).data;
 
   if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
+    await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
       importance: Notifications.AndroidImportance.MAX,
     });
