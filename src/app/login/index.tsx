@@ -30,7 +30,7 @@ export default function LoginScreen() {
       const dadosUsuario = await Chamadas.login(loginPayload);
 
       if (dadosUsuario) {
-        console.log(dadosUsuario)
+  
         router.push({
           pathname: '/home',
           params: {
@@ -39,14 +39,14 @@ export default function LoginScreen() {
         });
       } else {
         Burnt.alert({
-          title: "Eita, problema!",
+          title: "Eita, problema",
           message: "Usuário ou senha inválidos",
           preset: "error",
         });
       }
     } catch (error: any) {
       Burnt.alert({
-        title: "Eita, problema!",
+        title: "Eita, problema " + error.message,
         message: 'Erro ' + error.response?.data?.mensagem || 'Erro ao tentar fazer login',
         preset: "error",
       });
