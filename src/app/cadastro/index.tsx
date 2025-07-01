@@ -19,6 +19,7 @@ import { Chamadas } from "../../servicos/chamadasApi";
 import Logo from "../../components/logo";
 import styles from "./styles";
 import { router } from "expo-router";
+import { agendarNotificacaoAleatoria } from "../../utils/notifacacao/notificacoesDicas";
 
 async function registerForPushNotificationsAsync(): Promise<string | null> {
   let token: string | null = null;
@@ -93,10 +94,12 @@ export default function CadastroScreen() {
       const resposta = await Chamadas.criarUsuario(novoUsuario);
 
       if (resposta) {
-        router.push({
-          pathname: "/home",
-          params: { dados: JSON.stringify(resposta) },
-        });
+        if (values.tipoUsuario === "IDOSO") {
+          for (let i = 0; i < 3; i++) {
+            await agendarNotificacaoAleatoria();
+          }
+        }
+        router.back()
       }
     } catch (error: any) {
       Burnt.toast({
