@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     marginLeft: 8,
+    color: '#000'
   },
   containerCheckbox: {
     flex: 1,

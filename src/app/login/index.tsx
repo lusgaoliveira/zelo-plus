@@ -81,6 +81,7 @@ export default function LoginScreen() {
                   style={styles.input}
                   placeholder="Usuário"
                   onChangeText={handleChange('nomeUsuario')}
+                  placeholderTextColor="#666"
                   onBlur={handleBlur('nomeUsuario')}
                   value={values.nomeUsuario}
                 />
@@ -95,6 +96,7 @@ export default function LoginScreen() {
                   style={styles.input}
                   placeholder="Senha"
                   secureTextEntry={!mostrarSenha}
+                  placeholderTextColor="#666"
                   onChangeText={handleChange('senha')}
                   onBlur={handleBlur('senha')}
                   value={values.senha}

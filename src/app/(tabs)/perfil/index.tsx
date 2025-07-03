@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     alignSelf: "flex-start",
     marginTop: 12,
-    color: "#333",
+    color: "#666",
   },
   labelPerfil: {
     fontWeight: "bold",
@@ -310,6 +310,8 @@ const styles = StyleSheet.create({
     marginTop: 6,
     backgroundColor: "#fff",
     elevation: 1,
+    color: "#000"
+
   },
   botoesContainer: {
     flexDirection: "row",

@@ -79,6 +79,7 @@ export default function NovaSenhaScreen() {
                   placeholder="Senha"
                   secureTextEntry={!mostrarSenha}
                   onChangeText={handleChange('senha')}
+                  placeholderTextColor="#666"
                   onBlur={handleBlur('senha')}
                   value={values.senha}
                   editable={!carregando}
@@ -106,6 +107,7 @@ export default function NovaSenhaScreen() {
                   placeholder="Confirmar Senha"
                   secureTextEntry={!mostrarConfSenha}
                   onChangeText={handleChange('confSenha')}
+                  placeholderTextColor="#666"
                   onBlur={handleBlur('confSenha')}
                   value={values.confSenha}
                   editable={!carregando}
@@ -190,6 +192,7 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     marginLeft: 8,
+    color: '#000'
   },
   erro: {
     color: 'red',

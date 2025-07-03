@@ -225,6 +225,7 @@ const styles = StyleSheet.create({
     marginTop: 6,
     backgroundColor: "#f5f5f5",
     fontSize: 16,
+    color: "#000"
   },
   textInput: {
     fontSize: 16,

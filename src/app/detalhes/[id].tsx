@@ -367,6 +367,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginTop: 6,
     backgroundColor: "#f5f5f5",
+    color: "000",
     fontSize: 16,
   },
   inputDesabilitado: {

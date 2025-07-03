@@ -70,6 +70,7 @@ export default function RecuperarSenhaScreen() {
                   placeholder="E-mail"
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
+                  placeholderTextColor="#666"
                   returnKeyType="done"
                   value={values.email}
                   ref={emailRef}

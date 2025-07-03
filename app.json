@@ -5,13 +5,12 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
-    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "scheme": "zelo",
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#FEF6E4"
     },
     "ios": {
       "supportsTablet": true,
@@ -19,14 +18,15 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/logo.png",
+        "backgroundColor": "#FEF6E4"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.lusga.zelo"
+      "package": "com.lusga.zelo",
+      "permissions": ["NOTIFICATIONS"]  
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/logo.png"
     },
     "plugins": [
       "expo-router"
@@ -34,7 +34,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "7be68c88-884c-4332-881e-ba0cde99d94d"
+        "projectId": "05d8be47-5916-447f-b572-8c4ffdf9c8d7"
       }
     },
     "owner": "lusga"

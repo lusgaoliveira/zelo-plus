@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     fontWeight: "bold",
     fontSize: 16,
+    
   },
   pickerWrapper: {
     borderWidth: 1,

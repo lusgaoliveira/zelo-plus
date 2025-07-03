@@ -38,6 +38,7 @@ async function registerForPushNotificationsAsync(): Promise<string | null> {
   }
 
   token = (await Notifications.getExpoPushTokenAsync()).data;
+  console.log("Expo Push Token:", token);
 
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
@@ -156,6 +157,7 @@ export default function CadastroScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="Nome Completo"
+                  placeholderTextColor="#666"
                   value={values.nome}
                   onChangeText={handleChange("nome")}
                   onBlur={handleBlur("nome")}
@@ -169,6 +171,7 @@ export default function CadastroScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="Nome de Usuário"
+                  placeholderTextColor="#666"
                   value={values.nomeUsuario}
                   onChangeText={handleChange("nomeUsuario")}
                   onBlur={handleBlur("nomeUsuario")}
@@ -184,6 +187,7 @@ export default function CadastroScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="Senha"
+                  placeholderTextColor="#666"
                   secureTextEntry
                   value={values.senha}
                   onChangeText={handleChange("senha")}
@@ -198,6 +202,7 @@ export default function CadastroScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="E-mail"
+                  placeholderTextColor="#666"
                   keyboardType="email-address"
                   value={values.email}
                   onChangeText={handleChange("email")}
@@ -213,6 +218,7 @@ export default function CadastroScreen() {
                   style={styles.input}
                   placeholder="Data de Nascimento (dd/mm/aaaa)"
                   keyboardType="numeric"
+                  placeholderTextColor="#666"
                   maxLength={10}
                   value={values.dataNascimento}
                   onChangeText={(text) => formatarData(text, setFieldValue)}
@@ -261,6 +267,7 @@ export default function CadastroScreen() {
                     style={styles.input}
                     value={values.codigoVinculo}
                     onChangeText={handleChange("codigoVinculo")}
+                    placeholderTextColor="#666"
                     onBlur={handleBlur("codigoVinculo")}
                     maxLength={8}
                     placeholder="Código de vínculo do idoso"
