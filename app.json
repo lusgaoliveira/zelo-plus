@@ -17,6 +17,7 @@
       "bundleIdentifier": "com.lusga.zelo"
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#FEF6E4"

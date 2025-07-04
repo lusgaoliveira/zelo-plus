@@ -7,6 +7,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  PermissionsAndroid
 } from "react-native";
 import Checkbox from "expo-checkbox";
 import { Ionicons } from "@expo/vector-icons";
@@ -19,10 +20,23 @@ import { Chamadas } from "../../servicos/chamadasApi";
 import Logo from "../../components/logo";
 import styles from "./styles";
 import { router } from "expo-router";
+import Constants from "expo-constants"; 
 import { agendarNotificacaoAleatoria } from "../../utils/notifacacao/notificacoesDicas";
+import * as Device from "expo-device";
 
-async function registerForPushNotificationsAsync(): Promise<string | null> {
-  let token: string | null = null;
+export async function registerForPushNotificationsAsync(): Promise<string | null> {
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      sound: 'default', 
+    });
+  }
+
+  if (!Device.isDevice) {
+    alert("Notificações só funcionam em dispositivos físicos.");
+    return null;
+  }
 
   const { status: existingStatus } = await Notifications.getPermissionsAsync();
   let finalStatus = existingStatus;
@@ -32,23 +46,40 @@ async function registerForPushNotificationsAsync(): Promise<string | null> {
     finalStatus = status;
   }
 
+  if (Platform.OS === 'android' && Platform.Version >= 33) {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+    );
+    if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+      alert('Permissão POST_NOTIFICATIONS negada!');
+      return null;
+    }
+  }
+
   if (finalStatus !== 'granted') {
     alert('Permissão para notificações foi negada!');
     return null;
   }
 
-  token = (await Notifications.getExpoPushTokenAsync()).data;
-  console.log("Expo Push Token:", token);
+  const projectId = Constants.expoConfig?.extra?.eas?.projectId;
 
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-    });
+  if (!projectId) {
+    alert("projectId não encontrado. Verifique se está definido em app.json ou app.config.js");
+    return null;
   }
 
-  return token;
+  try {
+    const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+    console.log("Expo Push Token:", token);
+    return token;
+  } catch (error) {
+    console.error("Erro ao obter token de push:", error);
+    alert("Erro ao obter token de notificações.");
+    return null;
+  }
 }
+
+
 
 export default function CadastroScreen() {
   const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
@@ -292,6 +323,14 @@ export default function CadastroScreen() {
             </View>
           )}
         </Formik>
+        <TouchableOpacity
+          onPress={async () => {
+            const token = await registerForPushNotificationsAsync();
+            alert(token || 'Falha ao obter token');
+          }}
+        >
+          <Text>Testar Notificação</Text>
+        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   );
