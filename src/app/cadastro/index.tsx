@@ -323,14 +323,6 @@ export default function CadastroScreen() {
             </View>
           )}
         </Formik>
-        <TouchableOpacity
-          onPress={async () => {
-            const token = await registerForPushNotificationsAsync();
-            alert(token || 'Falha ao obter token');
-          }}
-        >
-          <Text>Testar Notificação</Text>
-        </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
   );

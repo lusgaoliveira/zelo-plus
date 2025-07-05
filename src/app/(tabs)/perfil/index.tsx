@@ -176,7 +176,12 @@ export default function PerfilScreen() {
         <Text style={styles.labelPerfil}>Foto de Perfil</Text>
         <TouchableOpacity onPress={selecionarImagem}>
           {perfil.fotoPerfil && perfil.fotoPerfil.trim() !== "" ? (
-            <Image source={{ uri: perfil.fotoPerfil }} style={styles.fotoPerfil} />
+            <Image
+              source={{
+                uri: `data:image/jpeg;base64,${perfil.fotoPerfil}?t=${Date.now()}`
+              }}
+              style={styles.fotoPerfil}
+            />
           ) : (
             <View style={styles.iconePerfil}>
               <Ionicons name="person-circle" size={100} color="#888" />

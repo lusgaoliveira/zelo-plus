@@ -140,7 +140,7 @@ export class Chamadas {
       // Removemos a URI base64 completa, já que o backend espera apenas o conteúdo
       delete payload.fotoPerfil;
 
-      const resposta = await instance.patch(`/usuarios/${id}/perfil`, payload);
+      const resposta = await instance.patch(`/usuarios/perfil/${id}`, payload);
       return resposta.data;
     } catch (error) {
       pegarErros(error);
