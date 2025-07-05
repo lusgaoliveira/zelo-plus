@@ -11,7 +11,6 @@ const dicasSaude = [
 
 export async function agendarNotificacaoAleatoria() {
   const dica = dicasSaude[Math.floor(Math.random() * dicasSaude.length)];
-  const seconds = Math.floor(Math.random() * 7200) + 600; 
 
   await Notifications.scheduleNotificationAsync({
     content: {
@@ -21,8 +20,8 @@ export async function agendarNotificacaoAleatoria() {
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds,
-      repeats: false, 
+      seconds: 3600,
+      repeats: true, 
     },
   });
 }
