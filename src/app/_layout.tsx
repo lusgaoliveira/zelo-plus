@@ -32,6 +32,7 @@ export default function Layout() {
 
   return (
     <Stack
+      initialRouteName="login/index"
       screenOptions={{
         headerStyle: {
           backgroundColor: "#FEF6E4",
