@@ -129,24 +129,20 @@ export class Chamadas {
 
 
   static async atualizarPerfil(id: number, dados: any): Promise<void> {
-    try {
-      const payload = { ...dados };
+  try {
+    const payload = { ...dados };
 
-      // Se a foto já estiver em base64, extraímos apenas o conteúdo necessário
-      if (dados.fotoPerfil && dados.fotoPerfil.startsWith("data:image")) {
-        payload.fotoPerfilBase64 = dados.fotoPerfil.split(",")[1];
-      }
-
-      // Removemos a URI base64 completa, já que o backend espera apenas o conteúdo
-      delete payload.fotoPerfil;
-
-      const resposta = await instance.patch(`/usuarios/perfil/${id}`, payload);
-      return resposta.data;
-    } catch (error) {
-      pegarErros(error);
-      throw error;
+    if (dados.fotoPerfil && dados.fotoPerfil.startsWith("data:image")) {
+      payload.fotoPerfil = dados.fotoPerfil.split(",")[1]; 
     }
+
+    const resposta = await instance.patch(`/usuarios/perfil/${id}`, payload);
+    return resposta.data;
+  } catch (error) {
+    pegarErros(error);
+    throw error;
   }
+}
 
   static async gerarVinculo(id: number): Promise<void> {
     try {

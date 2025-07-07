@@ -150,179 +150,181 @@ export default function CadastroScreen() {
       keyboardVerticalOffset={Platform.OS === "ios" ? 60 : 0}
     >
       <ScrollView
-        contentContainerStyle={styles.scrollContent}
+        style={{ flex: 1 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.logo}>
-          <Logo />
-          <Text style={styles.subtitulo}>Criar nova conta</Text>
-        </View>
+        <View style={{ flexGrow: 1, padding: 20, backgroundColor: "#FEF6E4" }}>
+          <View style={styles.logo}>
+            <Logo />
+            <Text style={styles.subtitulo}>Criar nova conta</Text>
+          </View>
 
-        <Formik
-          initialValues={{
-            nome: "",
-            nomeUsuario: "",
-            senha: "",
-            email: "",
-            dataNascimento: "",
-            tipoUsuario: "",
-            codigoVinculo: "",
-          }}
-          validationSchema={CriarUsuarioSchema}
-          onSubmit={criarUsuario}
-        >
-          {({
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue,
-            values,
-            errors,
-            touched,
-          }) => (
-            <View style={styles.formContainer}>
-              {/* Nome */}
-              <View style={styles.inputGroup}>
-                <Ionicons name="person-circle" size={20} color="#444" />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Nome Completo"
-                  placeholderTextColor="#666"
-                  value={values.nome}
-                  onChangeText={handleChange("nome")}
-                  onBlur={handleBlur("nome")}
-                />
-              </View>
-              {touched.nome && errors.nome && <Text style={styles.erro}>{errors.nome}</Text>}
-
-              {/* Nome de usuário */}
-              <View style={styles.inputGroup}>
-                <Ionicons name="person" size={20} color="#444" />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Nome de Usuário"
-                  placeholderTextColor="#666"
-                  value={values.nomeUsuario}
-                  onChangeText={handleChange("nomeUsuario")}
-                  onBlur={handleBlur("nomeUsuario")}
-                />
-              </View>
-              {touched.nomeUsuario && errors.nomeUsuario && (
-                <Text style={styles.erro}>{errors.nomeUsuario}</Text>
-              )}
-
-              {/* Senha */}
-              <View style={styles.inputGroup}>
-                <Ionicons name="lock-closed" size={20} color="#444" />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Senha"
-                  placeholderTextColor="#666"
-                  secureTextEntry
-                  value={values.senha}
-                  onChangeText={handleChange("senha")}
-                  onBlur={handleBlur("senha")}
-                />
-              </View>
-              {touched.senha && errors.senha && <Text style={styles.erro}>{errors.senha}</Text>}
-
-              {/* Email */}
-              <View style={styles.inputGroup}>
-                <Ionicons name="mail" size={20} color="#444" />
-                <TextInput
-                  style={styles.input}
-                  placeholder="E-mail"
-                  placeholderTextColor="#666"
-                  keyboardType="email-address"
-                  value={values.email}
-                  onChangeText={handleChange("email")}
-                  onBlur={handleBlur("email")}
-                />
-              </View>
-              {touched.email && errors.email && <Text style={styles.erro}>{errors.email}</Text>}
-
-              {/* Data de nascimento */}
-              <View style={styles.inputGroup}>
-                <Ionicons name="calendar-outline" size={20} color="#444" />
-                <TextInput
-                  style={styles.input}
-                  placeholder="Data de Nascimento (dd/mm/aaaa)"
-                  keyboardType="numeric"
-                  placeholderTextColor="#666"
-                  maxLength={10}
-                  value={values.dataNascimento}
-                  onChangeText={(text) => formatarData(text, setFieldValue)}
-                  onBlur={handleBlur("dataNascimento")}
-                />
-              </View>
-              {touched.dataNascimento && errors.dataNascimento && (
-                <Text style={styles.erro}>{errors.dataNascimento}</Text>
-              )}
-
-              {/* Tipo de usuário */}
-              <View style={styles.labelWithIcon}>
-                <Ionicons name="accessibility-outline" size={20} color="#444" />
-                <Text style={styles.labelText}>Abaixo selecione o seu tipo de usuário</Text>
-              </View>
-              <View style={styles.inputGroup}>
-                <View style={styles.containerCheckbox}>
-                  <View style={styles.checkboxItem}>
-                    <Text style={styles.checkboxLabel}>Idoso</Text>
-                    <Checkbox
-                      style={styles.inputCheckbox}
-                      value={values.tipoUsuario === "IDOSO"}
-                      onValueChange={() => setFieldValue("tipoUsuario", "IDOSO")}
-                    />
-                  </View>
-
-                  <View style={styles.checkboxItem}>
-                    <Text style={styles.checkboxLabel}>Cuidador</Text>
-                    <Checkbox
-                      style={styles.inputCheckbox}
-                      value={values.tipoUsuario === "CUIDADOR"}
-                      onValueChange={() => setFieldValue("tipoUsuario", "CUIDADOR")}
-                    />
-                  </View>
-                </View>
-              </View>
-              {touched.tipoUsuario && errors.tipoUsuario && (
-                <Text style={styles.erro}>{errors.tipoUsuario}</Text>
-              )}
-
-              {/* Código do idoso (se cuidador) */}
-              {values.tipoUsuario === "CUIDADOR" && (
+          <Formik
+            initialValues={{
+              nome: "",
+              nomeUsuario: "",
+              senha: "",
+              email: "",
+              dataNascimento: "",
+              tipoUsuario: "",
+              codigoVinculo: "",
+            }}
+            validationSchema={CriarUsuarioSchema}
+            onSubmit={criarUsuario}
+          >
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              setFieldValue,
+              values,
+              errors,
+              touched,
+            }) => (
+              <View style={styles.formContainer}>
+                {/* Nome */}
                 <View style={styles.inputGroup}>
-                  <Ionicons name="code-working" size={20} color="#444" />
+                  <Ionicons name="person-circle" size={20} color="#444" />
                   <TextInput
                     style={styles.input}
-                    value={values.codigoVinculo}
-                    onChangeText={handleChange("codigoVinculo")}
+                    placeholder="Nome Completo"
                     placeholderTextColor="#666"
-                    onBlur={handleBlur("codigoVinculo")}
-                    maxLength={8}
-                    placeholder="Código de vínculo do idoso"
+                    value={values.nome}
+                    onChangeText={handleChange("nome")}
+                    onBlur={handleBlur("nome")}
                   />
                 </View>
-              )}
-              {values.tipoUsuario === "CUIDADOR" &&
-                touched.codigoVinculo &&
-                errors.codigoVinculo && (
-                  <Text style={styles.erro}>{errors.codigoVinculo}</Text>
+                {touched.nome && errors.nome && <Text style={styles.erro}>{errors.nome}</Text>}
+
+                {/* Nome de usuário */}
+                <View style={styles.inputGroup}>
+                  <Ionicons name="person" size={20} color="#444" />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Nome de Usuário"
+                    placeholderTextColor="#666"
+                    value={values.nomeUsuario}
+                    onChangeText={handleChange("nomeUsuario")}
+                    onBlur={handleBlur("nomeUsuario")}
+                  />
+                </View>
+                {touched.nomeUsuario && errors.nomeUsuario && (
+                  <Text style={styles.erro}>{errors.nomeUsuario}</Text>
                 )}
 
-              {/* Botões */}
-              <View style={styles.botoesContainer}>
-                <TouchableOpacity style={styles.botaoSecundario} onPress={() => router.back()}>
-                  <Text style={styles.botaoTexto}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.botaoPrincipal} onPress={handleSubmit as any}>
-                  <Text style={styles.botaoTexto}>Cadastrar</Text>
-                </TouchableOpacity>
+                {/* Senha */}
+                <View style={styles.inputGroup}>
+                  <Ionicons name="lock-closed" size={20} color="#444" />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Senha"
+                    placeholderTextColor="#666"
+                    secureTextEntry
+                    value={values.senha}
+                    onChangeText={handleChange("senha")}
+                    onBlur={handleBlur("senha")}
+                  />
+                </View>
+                {touched.senha && errors.senha && <Text style={styles.erro}>{errors.senha}</Text>}
+
+                {/* Email */}
+                <View style={styles.inputGroup}>
+                  <Ionicons name="mail" size={20} color="#444" />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="E-mail"
+                    placeholderTextColor="#666"
+                    keyboardType="email-address"
+                    value={values.email}
+                    onChangeText={handleChange("email")}
+                    onBlur={handleBlur("email")}
+                  />
+                </View>
+                {touched.email && errors.email && <Text style={styles.erro}>{errors.email}</Text>}
+
+                {/* Data de nascimento */}
+                <View style={styles.inputGroup}>
+                  <Ionicons name="calendar-outline" size={20} color="#444" />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Data de Nascimento (dd/mm/aaaa)"
+                    keyboardType="numeric"
+                    placeholderTextColor="#666"
+                    maxLength={10}
+                    value={values.dataNascimento}
+                    onChangeText={(text) => formatarData(text, setFieldValue)}
+                    onBlur={handleBlur("dataNascimento")}
+                  />
+                </View>
+                {touched.dataNascimento && errors.dataNascimento && (
+                  <Text style={styles.erro}>{errors.dataNascimento}</Text>
+                )}
+
+                {/* Tipo de usuário */}
+                <View style={styles.labelWithIcon}>
+                  <Ionicons name="accessibility-outline" size={20} color="#444" />
+                  <Text style={styles.labelText}>Abaixo selecione o seu tipo de usuário</Text>
+                </View>
+                <View style={styles.inputGroup}>
+                  <View style={styles.containerCheckbox}>
+                    <View style={styles.checkboxItem}>
+                      <Text style={styles.checkboxLabel}>Idoso</Text>
+                      <Checkbox
+                        style={styles.inputCheckbox}
+                        value={values.tipoUsuario === "IDOSO"}
+                        onValueChange={() => setFieldValue("tipoUsuario", "IDOSO")}
+                      />
+                    </View>
+
+                    <View style={styles.checkboxItem}>
+                      <Text style={styles.checkboxLabel}>Cuidador</Text>
+                      <Checkbox
+                        style={styles.inputCheckbox}
+                        value={values.tipoUsuario === "CUIDADOR"}
+                        onValueChange={() => setFieldValue("tipoUsuario", "CUIDADOR")}
+                      />
+                    </View>
+                  </View>
+                </View>
+                {touched.tipoUsuario && errors.tipoUsuario && (
+                  <Text style={styles.erro}>{errors.tipoUsuario}</Text>
+                )}
+
+                {/* Código do idoso (se cuidador) */}
+                {values.tipoUsuario === "CUIDADOR" && (
+                  <View style={styles.inputGroup}>
+                    <Ionicons name="code-working" size={20} color="#444" />
+                    <TextInput
+                      style={styles.input}
+                      value={values.codigoVinculo}
+                      onChangeText={handleChange("codigoVinculo")}
+                      placeholderTextColor="#666"
+                      onBlur={handleBlur("codigoVinculo")}
+                      maxLength={8}
+                      placeholder="Código de vínculo do idoso"
+                    />
+                  </View>
+                )}
+                {values.tipoUsuario === "CUIDADOR" &&
+                  touched.codigoVinculo &&
+                  errors.codigoVinculo && (
+                    <Text style={styles.erro}>{errors.codigoVinculo}</Text>
+                  )}
+
+                {/* Botões */}
+                <View style={styles.botoesContainer}>
+                  <TouchableOpacity style={styles.botaoSecundario} onPress={() => router.back()}>
+                    <Text style={styles.botaoTexto}>Cancelar</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.botaoPrincipal} onPress={handleSubmit as any}>
+                    <Text style={styles.botaoTexto}>Cadastrar</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          )}
-        </Formik>
+            )}
+          </Formik>
+        </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );

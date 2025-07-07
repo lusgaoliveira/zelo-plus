@@ -134,7 +134,7 @@ export default function PerfilScreen() {
         email: perfil.email,
         nome: perfil.nome,
         dataNascimento: perfil.dataNascimento,
-        fotoPerfilBase64: base64,
+        fotoPerfil: base64,
       });
       Burnt.toast({
         title: "Sucesso",

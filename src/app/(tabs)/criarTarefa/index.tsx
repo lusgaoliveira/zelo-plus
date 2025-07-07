@@ -240,6 +240,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     fontSize: 16,
+    color: "#000",
   },
   botao: {
     backgroundColor: "#28A745",
